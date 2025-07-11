@@ -17,6 +17,7 @@ constexpr int EYE_LEDS_1_PIN = 22;
 constexpr int LED_STRIP_NUM_LEDS = 15;
 
 DMAMEM int displayMemory[LED_STRIP_NUM_LEDS * 4 / 4];
+
 int drawingMemory[LED_STRIP_NUM_LEDS * 4 / 4];
 const int config = WS2811_RGBW | WS2811_800kHz;
 

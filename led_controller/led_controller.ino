@@ -9,11 +9,12 @@ constexpr int BUTTON_COLUMN_1_PIN = 0;
 constexpr int BUTTON_ROW_1_PIN = 1;
 
 constexpr int LED_STRIP_1_PIN = 2;
+constexpr int EYE_LEDS_1_PIN = 22;
 
 // todo: fix the color order
 #define LED_CHIPSET WS2811
-#define LED_COLOR_ORDER GRBW
-constexpr int LED_STRIP_NUM_LEDS = 10;
+#define LED_COLOR_ORDER WGRB
+constexpr int LED_STRIP_NUM_LEDS = 15;
 
 DMAMEM int displayMemory[LED_STRIP_NUM_LEDS * 4 / 4];
 int drawingMemory[LED_STRIP_NUM_LEDS * 4 / 4];
@@ -34,7 +35,7 @@ void setup() {
 
   // Set all LEDs to white using the white channel
   for (int i = 0; i < LED_STRIP_NUM_LEDS; i++) {
-    leds.setPixel(i, 0x000000AA); // R=0, G=0, B=0, W=255
+    leds.setPixel(i, 0x0000AA00); // W=0, G=0, R=0, B=255
   }
 
   leds.show();

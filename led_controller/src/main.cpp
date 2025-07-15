@@ -9,6 +9,9 @@
 #define LED_COLOR_ORDER WGRB
 
 constexpr int BOARD_LED_PIN = 13;
+unsigned long previousMillis = 0;
+const unsigned long interval = 500;  // 500ms interval
+bool ledState = false;
 
 void setup() {
   Serial.begin(9600);
@@ -23,11 +26,14 @@ void setup() {
 }
 
 void loop() {
-  // flash LED to confirm the program is running.
-  digitalWrite(BOARD_LED_PIN, HIGH);
-  delay(500);
-  digitalWrite(BOARD_LED_PIN, LOW);
-  delay(500);
+  // flash LED and printout to confirm the program is running.
+  unsigned long currentTime = millis();
+  if (currentTime - previousMillis > 500) {
+    previousMillis = currentTime;
+    ledState = !ledState;
+    digitalWrite(BOARD_LED_PIN, ledState);
+    Serial.println("test printout");
+  }
 
   loopLedStrips();
   loopEyes();

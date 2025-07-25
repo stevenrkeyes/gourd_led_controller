@@ -6,7 +6,8 @@
 DMAMEM int displayMemoryLeds[LED_STRIP_NUM_LEDS];
 int drawingMemoryLeds[LED_STRIP_NUM_LEDS];
 const int config = WS2811_RGBW | WS2811_800kHz;
-OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config, LED_STRIP_1_PIN);
+const int NUM_PINS = 1;
+OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config, NUM_PINS);
 
 static std::vector<LedPulse> activePulses;
 static const unsigned long pulseDuration = 400; // ms for pulse to travel full strip
@@ -46,9 +47,4 @@ void loopLedStrips() {
         }
     }
     leds.show();
-    // Debug: print the color of the first LED
-    char buf[16];
-    sprintf(buf, "%08lX", leds.getPixel(0));
-    Serial.print("LED 0 color: 0x");
-    Serial.println(buf);
 } 

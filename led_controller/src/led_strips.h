@@ -4,7 +4,7 @@
 #include "pins.h"
 #include <vector>
 
-constexpr int LED_STRIP_NUM_LEDS = 45;
+constexpr int LED_STRIP_NUM_LEDS = 50;
 
 class OctoWS2811;
 extern OctoWS2811 leds;
@@ -19,4 +19,4 @@ struct LedPulse {
 
 void triggerLedPulse(unsigned long timestamp);
 
-#endif // LED_STRIPS_H 
+#endif // LED_STRIPS_H

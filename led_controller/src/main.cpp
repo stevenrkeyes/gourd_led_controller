@@ -2,13 +2,13 @@
 #include "led_strips.h"
 #include "eyes.h"
 #include "buttons.h"
+#include "pins.h"
 
 #define LOOP_DELAY_MS 2
 // Do we need these?
 #define LED_CHIPSET WS2811
 #define LED_COLOR_ORDER WGRB
 
-constexpr int BOARD_LED_PIN = 13;
 unsigned long previousMillis = 0;
 const unsigned long interval = 500;  // 500ms interval
 bool ledState = false;

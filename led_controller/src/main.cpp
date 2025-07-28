@@ -4,11 +4,6 @@
 #include "buttons.h"
 #include "pins.h"
 
-#define LOOP_DELAY_MS 2
-// Do we need these?
-#define LED_CHIPSET WS2811
-#define LED_COLOR_ORDER WGRB
-
 unsigned long previousMillis = 0;
 const unsigned long interval = 500;  // 500ms interval
 bool ledState = false;
@@ -28,15 +23,23 @@ void setup() {
 void loop() {
   // flash LED and printout to confirm the program is running.
   unsigned long currentTime = millis();
-  if (currentTime - previousMillis > 500) {
+  if (currentTime - previousMillis > 2000) {
     previousMillis = currentTime;
     ledState = !ledState;
     digitalWrite(BOARD_LED_PIN, ledState);
     Serial.println("test printout");
   }
 
+  // Check for serial input
+  if (Serial.available()) {
+    char c = Serial.read();
+    if (c == 'a') {
+      Serial.println("serial 'a' received");
+      triggerLedPulse(millis());
+    }
+  }
+
   loopLedStrips();
   loopEyes();
   loopButtons();
-  delay(LOOP_DELAY_MS);
 }

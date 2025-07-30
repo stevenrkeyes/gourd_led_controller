@@ -1,66 +1,74 @@
-// buttons.cpp
-// Add your function definitions here 
-
 #include <Bounce2.h>
 #include "pins.h"
 #include "buttons.h"
 #include "led_strips.h"
 #include <Keyboard.h> 
 
-// TODO: Remove buttons if we're not going to use it (i.e. read column pins directly).
+// TODO: Remove Bounce buttons if we're going to read column GPIO pins directly.
 std::vector<Bounce> buttons;
+// Tracks the last state (pressed or not) of all button so we know when they change.
 std::vector<bool> button_states;
 
 void setupButtons() {
-    // TODO: Shift this to loop only?
+    // TODO: Should do this for all input pins.
+    // Configure pin 0 (GPIO_B0_00) for 100k pull-up
+    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);    
+    // Configure pin 1 (GPIO_B0_01) for 100k pull-up
+    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);
+    
+    // Row pins initially set to input so they don't pull down.
     for (int row_pin : ROW_PINS) {
         pinMode(row_pin, INPUT);
     }
-    // TODO: Maybe implicitly done by button object creation.
-    for (int col_pin : COL_PINS) {
-        pinMode(col_pin, INPUT_PULLUP);
-    }
+    // TODO: Remove Bounce buttons if we're going to read column GPIO pins directly.
     for (size_t i = 0; i < COL_PINS.size(); i++) {
         buttons.emplace_back();
         buttons[i].attach(COL_PINS[i], INPUT_PULLUP);
         buttons[i].interval(25);
     }
-
     for (int i = 0; i < NUM_BUTTONS; i++) {
         button_states.push_back(false);
     }
 }
 
 void sendKey(int row, int col) {
-    // TODO: Index into an alphabet with row and col.
-    Keyboard.press('a');
-    delay(10); // Short delay to ensure keypress is registered
-    Keyboard.release('a');        
+    // TODO: Use row / col to index into an alphabet instead of always sending 'a'.
+    bool silent = true;
+    if (!silent) {
+        Keyboard.press('a');
+        delay(10); // Short delay to ensure keypress is registered
+        Keyboard.release('a');            
+    }
 }
 
 void loopButtons() {
-    int row_index = 0;
-    for (int row_pin : ROW_PINS) {
+    for (int row_index = 0; row_index < ROW_PINS.size(); row_index++) {
+        int row_pin = ROW_PINS[row_index];
+        // Set the row to low output - when a button in that row is pressed, its INPUT_PULLUP will be pulled to low.
         pinMode(row_pin, OUTPUT);
         digitalWrite(row_pin, LOW);
         delay(1); // Small delay to ensure pin state is stable
         
-        int col_index = 0;
-        for (int col_pin : COL_PINS) {
-            // Read the column pin directly
+        for (int col_index = 0; col_index < COL_PINS.size(); col_index++) {
+            int col_pin = COL_PINS[col_index];
+            int button_index = row_index * COL_PINS.size() + col_index;
+
             int buttonState = digitalRead(col_pin);
+            
             if (buttonState == LOW) { // Button is pressed (pulls column to ground)
-                Serial.println("button pressed: row " + String(row_index) + ", col " + String(col_index));
-                triggerLedPulse(millis(), col_index);
-                
-                // TODO: Keep track of previous state in button_states and only do things on changes.
-                
-                // Broken since iteration over ROW_PINS and not row pin indices.
-                sendKey(row_pin, col_pin);
+                if (!button_states[button_index]) { // Button was not pressed before
+                    Serial.println("button pressed: row " + String(row_index) + ", col " + String(col_index));
+                    triggerLedPulse(millis(), col_index);
+                    sendKey(row_index, col_index);
+                    button_states[button_index] = true; // Mark as pressed
+                }
+            } else if (buttonState == HIGH) { // Button is not pressed
+                if (button_states[button_index]) { // Button was pressed before
+                    Serial.println("button released: row " + String(row_index) + ", col " + String(col_index));
+                    button_states[button_index] = false; // Mark as not pressed
+                }
             }
-            col_index++;       
         }
         pinMode(row_pin, INPUT);            
     }
-    row_index++;
 } 

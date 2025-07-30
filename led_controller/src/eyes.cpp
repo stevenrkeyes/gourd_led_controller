@@ -22,4 +22,5 @@ void setupEyes() {
 
 void loopEyes() {
     // Does nothing, at the moment.
+    FastLED.show();
 } 

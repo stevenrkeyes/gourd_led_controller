@@ -18,7 +18,6 @@ void setupEyes() {
         }
     }
     FastLED.show();
-    Serial.println("Finished eye setup.");
 }
 
 void loopEyes() {

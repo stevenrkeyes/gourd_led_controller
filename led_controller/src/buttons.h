@@ -5,12 +5,13 @@
 
 class Bounce;
 
-// Eventually will be 16.
-constexpr int NUM_BUTTONS = 4;
+// 2 rows × 3 columns = 6 buttons
+constexpr int NUM_BUTTONS = 6;
 
 // Used these since they're easily available via breakout.
-const std::vector<int> ROW_PINS {22, 23};
-const std::vector<int> COL_PINS {0, 1};
+const std::vector<int> COL_PINS {0, 1, 23};
+const std::vector<int> ROW_PINS {22, 3};
+
 
 // Add your declarations here
 void setupButtons();

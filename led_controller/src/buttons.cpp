@@ -10,11 +10,11 @@ std::vector<Bounce> buttons;
 std::vector<bool> button_states;
 
 void setupButtons() {
-    // TODO: Should do this for all input pins.
-    // Configure pin 0 (GPIO_B0_00) for 100k pull-up
-    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);    
-    // Configure pin 1 (GPIO_B0_01) for 100k pull-up
-    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);
+    // Configure pull-ups for all input pins
+    // Column pins (0, 1, 23) - these are always INPUT_PULLUP
+    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_00 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);  // Pin 0
+    IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B0_01 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);  // Pin 1
+    IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_02 = IOMUXC_SW_PAD_CTL_PAD_GPIO_B1_02 | IOMUXC_PAD_PKE | IOMUXC_PAD_PUE | IOMUXC_PAD_PUS(2);  // Pin 23
     
     // Row pins initially set to input so they don't pull down.
     for (int row_pin : ROW_PINS) {
@@ -53,7 +53,7 @@ void loopButtons() {
             int col_pin = COL_PINS[col_index];
             int button_index = row_index * COL_PINS.size() + col_index;
 
-            int buttonState = digitalRead(col_pin);
+            int buttonState = digitalRead(col_pin); 
             
             if (buttonState == LOW) { // Button is pressed (pulls column to ground)
                 if (!button_states[button_index]) { // Button was not pressed before

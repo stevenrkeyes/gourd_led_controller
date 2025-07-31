@@ -31,12 +31,8 @@ void loopEyes() {
     for (int i = 0; i < NUM_EYES; i++) {
         CRGB color = eye_states[i] ? CRGB::Red : CRGB::Blue;
         int eye_offset = i * EYE_NUM_LEDS;
-        int inner_eye_offset = eye_offset + OUTER_EYE_NUM_LEDS;
-        for (int j = 0; j < OUTER_EYE_NUM_LEDS; j++) {
+        for (int j = 0; j < EYE_NUM_LEDS; j++) {
             eyeLeds[eye_offset + j] = color;
-        }
-        for (int j = 0; j < INNER_EYE_NUM_LEDS; j++) {
-            eyeLeds[inner_eye_offset + j] = CRGB::DarkCyan; // Green inner ring
         }
     }
     FastLED.show();

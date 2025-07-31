@@ -4,7 +4,13 @@
 #include "pins.h"
 
 class Bounce;
-extern Bounce button1;
+
+// Eventually will be 16.
+constexpr int NUM_BUTTONS = 4;
+
+// Used these since they're easily available via breakout.
+const std::vector<int> ROW_PINS {22, 23};
+const std::vector<int> COL_PINS {0, 1};
 
 // Add your declarations here
 void setupButtons();

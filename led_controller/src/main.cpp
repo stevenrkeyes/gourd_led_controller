@@ -32,7 +32,6 @@ void loop() {
     previousMillis = currentTime;
     ledState = !ledState;
     digitalWrite(BOARD_LED_PIN, ledState);
-    Serial.println("test printout");
   }
 
   loopLedStrips();

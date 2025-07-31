@@ -6,7 +6,7 @@
 
 // Main LED strip configuration
 constexpr int LED_STRIP_NUM_LEDS = 40;
-constexpr int LED_STRIP_NUM_STRIPS = 2;
+constexpr int LED_STRIP_NUM_STRIPS = 3;
 constexpr int TOTAL_NUM_LEDS = LED_STRIP_NUM_STRIPS * LED_STRIP_NUM_LEDS;
 
 class OctoWS2811;

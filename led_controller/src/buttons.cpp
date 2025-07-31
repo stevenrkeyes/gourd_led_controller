@@ -2,6 +2,7 @@
 #include "pins.h"
 #include "buttons.h"
 #include "led_strips.h"
+#include "eyes.h"
 #include <Keyboard.h> 
 
 // TODO: Remove Bounce buttons if we're going to read column GPIO pins directly.
@@ -61,11 +62,13 @@ void loopButtons() {
                     triggerLedPulse(millis(), col_index);
                     sendKey(row_index, col_index);
                     button_states[button_index] = true; // Mark as pressed
+                    setEyeStatus(button_index, true);
                 }
             } else if (buttonState == HIGH) { // Button is not pressed
                 if (button_states[button_index]) { // Button was pressed before
                     Serial.println("button released: row " + String(row_index) + ", col " + String(col_index));
                     button_states[button_index] = false; // Mark as not pressed
+                    setEyeStatus(button_index, false);
                 }
             }
         }

@@ -5,12 +5,12 @@
 
 #include <OctoWS2811.h>
 #include "shared/communication.h"
-#include <vector>
 
 // Define LedPulse struct
 struct LedPulse {
     unsigned long startTime;
     int strip;
+    bool active;
 };
 
 // OctoWS2811 setup for 8 strips
@@ -19,7 +19,8 @@ int drawingMemoryLeds[LED_STRIP_NUM_LEDS * 8];
 const int config = WS2811_RGBW | WS2811_800kHz;
 OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config, 8);
 
-static std::vector<LedPulse> activePulses;
+#define MAX_ACTIVE_PULSES 8
+static LedPulse activePulses[MAX_ACTIVE_PULSES];
 static const unsigned long pulseDuration = 400; // ms for pulse to travel full strip
 static const uint32_t pulseColor = 0x00FFFFFF; // White
 static const uint32_t backgroundColor = 0x00000000; // Off
@@ -27,6 +28,11 @@ static const uint32_t backgroundColor = 0x00000000; // Off
 void setupLedStrips() {
     leds.begin();
     leds.show(); // Clear LEDs to off
+
+    // Initialize all pulses as inactive
+    for (int i = 0; i < MAX_ACTIVE_PULSES; i++) {
+        activePulses[i].active = false;
+    }
 
     // Set all LEDs to dim white using the white channel
     for (int strip = 0; strip < 8; strip++) {
@@ -42,9 +48,17 @@ void setupLedStrips() {
 
 void triggerLedPulse(unsigned long timestamp, int strip) {
     if (strip >= 0 && strip < 8) {
-        activePulses.push_back({timestamp, strip});
-        Serial.print("Triggered pulse on strip ");
-        Serial.println(strip);
+        // Find first inactive slot
+        for (int i = 0; i < MAX_ACTIVE_PULSES; i++) {
+            if (!activePulses[i].active) {
+                activePulses[i].startTime = timestamp;
+                activePulses[i].strip = strip;
+                activePulses[i].active = true;
+                Serial.print("Triggered pulse on strip ");
+                Serial.println(strip);
+                break;
+            }
+        }
     }
 }
 
@@ -67,16 +81,17 @@ void loopLedStrips() {
     }
     
     // Draw active pulses
-    for (auto it = activePulses.begin(); it != activePulses.end(); ) {
-        float progress = float(now - it->startTime) / pulseDuration;
-        int ledIndex = int(progress * LED_STRIP_NUM_LEDS);
-        
-        if (ledIndex >= 0 && ledIndex < LED_STRIP_NUM_LEDS) {
-            int pixelIndex = it->strip * LED_STRIP_NUM_LEDS + ledIndex;
-            leds.setPixel(pixelIndex, pulseColor);
-            ++it;
-        } else {
-            it = activePulses.erase(it); // Remove finished pulse
+    for (int i = 0; i < MAX_ACTIVE_PULSES; i++) {
+        if (activePulses[i].active) {
+            float progress = float(now - activePulses[i].startTime) / pulseDuration;
+            int ledIndex = int(progress * LED_STRIP_NUM_LEDS);
+            
+            if (ledIndex >= 0 && ledIndex < LED_STRIP_NUM_LEDS) {
+                int pixelIndex = activePulses[i].strip * LED_STRIP_NUM_LEDS + ledIndex;
+                leds.setPixel(pixelIndex, pulseColor);
+            } else {
+                activePulses[i].active = false; // Remove finished pulse
+            }
         }
     }
     

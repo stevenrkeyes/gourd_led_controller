@@ -10,6 +10,9 @@ constexpr int NUM_BUTTONS = 6;
 
 // Used these since they're easily available via breakout.
 const std::vector<int> COL_PINS {0, 1, 23};
+// For 4.1
+// const std::vector<int> ROW_PINS {22, 31};
+// For 4.0
 const std::vector<int> ROW_PINS {22, 3};
 
 

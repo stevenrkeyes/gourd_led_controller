@@ -33,6 +33,7 @@ void setupLedStrips() {
 
 void triggerLedPulse(unsigned long timestamp, int index) {
     activePulses.push_back({timestamp, index});
+    activePulses.push_back({timestamp, 3}); // testing only.
 }
 
 void loopLedStrips() {

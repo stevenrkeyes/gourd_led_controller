@@ -3,8 +3,9 @@
 CRGB eyeLeds[NUM_EYES * EYE_NUM_LEDS];
 // Tracks whether the button corresponding to each eye is pressed.
 std::vector<bool> eye_states;
+// Variables for gating updates to every 100ms.
 unsigned long last_eye_update = 0;
-const unsigned long EYE_UPDATE_INTERVAL = 100; // 100ms
+const unsigned long EYE_UPDATE_INTERVAL = 100;
 
 void setupEyes() {
     FastLED.addLeds<WS2811, EYE_LEDS_PIN, GRB>(eyeLeds, NUM_EYES * EYE_NUM_LEDS);
@@ -16,9 +17,10 @@ void setupEyes() {
     }
 }
 
+// Used externally; see buttons.cpp.
 void setEyeStatus(int eye_index, bool status) {
     eye_states[eye_index] = status;
-}
+}   
 
 void loopEyes() {
     unsigned long current_time = millis();
@@ -27,7 +29,7 @@ void loopEyes() {
     }
     last_eye_update = current_time;
     
-    // Set eye LED pattern
+    // Set LED values for each eye based on whether it's on or not.
     for (int i = 0; i < NUM_EYES; i++) {
         CRGB color = eye_states[i] ? CRGB::Red : CRGB::Blue;
         int eye_offset = i * EYE_NUM_LEDS;

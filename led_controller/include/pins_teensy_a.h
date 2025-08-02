@@ -4,17 +4,12 @@
 // Teensy A - Input device with button LEDs
 #define BOARD_LED_PIN 13
 
-// Button input pins
-#define BUTTON_COLUMN_1_PIN 0
-#define BUTTON_ROW_1_PIN 1
-#define BUTTON_COLUMN_2_PIN 2
-#define BUTTON_ROW_2_PIN 3
+// Button configuration
+#define NUM_BUTTONS 6  // Change this to scale up to 16 later
+const int BUTTON_PINS[NUM_BUTTONS] = {0, 1, 2, 3, 4, 5};
 
-// Button LED pins (individual LEDs or small strips)
-#define BUTTON_LED_1_PIN 4
-#define BUTTON_LED_2_PIN 5
-#define BUTTON_LED_3_PIN 6
-#define BUTTON_LED_4_PIN 7
+// Button LED pins (moved to higher pins)
+const int BUTTON_LED_PINS[NUM_BUTTONS] = {6, 7, 14, 15, 16, 17};
 
 // Sensor pins
 #define SENSOR_ANALOG_1_PIN A0

@@ -4,15 +4,19 @@
 #ifdef HAS_BUTTON_LEDS
 
 #include <FastLED.h>
+#include "shared/communication.h"
 
 #ifdef TEENSY_A
 #include "pins_teensy_a.h"
 #endif
 
-#define NUM_BUTTON_LEDS 4
-CRGB buttonLeds[NUM_BUTTON_LEDS];
+// Array to hold button LED colors
+CRGB buttonLeds[4];
 
 void setupButtonLeds() {
+    // TODO: Update this to use the new array-based pin definitions
+    // Temporarily disabled to fix compilation
+    /*
     // Initialize button LEDs using FastLED
     // Note: You may need to adjust the LED type and color order based on your actual LEDs
     FastLED.addLeds<WS2812, BUTTON_LED_1_PIN, GRB>(&buttonLeds[0], 1);
@@ -23,36 +27,26 @@ void setupButtonLeds() {
     // Set initial state - all LEDs off
     FastLED.clear();
     FastLED.show();
+    */
     
-    Serial.println("Button LEDs initialized");
+    Serial.println("Button LEDs temporarily disabled - buttons only");
 }
 
 void loopButtonLeds() {
-    // Handle any button LED animations
-    // This could include breathing effects, color changes, etc.
-    static unsigned long lastUpdate = 0;
-    
-    if (millis() - lastUpdate > 50) { // Update at 20Hz
-        lastUpdate = millis();
-        
-        // Example: gentle breathing effect on button 1
-        float breath = (sin(millis() * 0.003f) + 1.0f) * 0.5f; // 0.0 to 1.0
-        uint8_t brightness = (uint8_t)(breath * 50); // Scale to 0-50
-        buttonLeds[0] = CRGB(brightness, brightness, brightness);
-        
-        FastLED.show();
-    }
+    // Button LED updates - temporarily disabled
 }
 
-void setButtonLed(uint8_t buttonId, CRGB color) {
-    if (buttonId < NUM_BUTTON_LEDS) {
-        buttonLeds[buttonId] = color;
-        FastLED.show();
-    }
-}
-
-void setButtonLed(uint8_t buttonId, uint8_t r, uint8_t g, uint8_t b) {
-    setButtonLed(buttonId, CRGB(r, g, b));
+void setButtonLed(int buttonId, uint8_t r, uint8_t g, uint8_t b) {
+    // Temporarily disabled
+    Serial.print("Would set button LED ");
+    Serial.print(buttonId);
+    Serial.print(" to RGB(");
+    Serial.print(r);
+    Serial.print(",");
+    Serial.print(g);
+    Serial.print(",");
+    Serial.print(b);
+    Serial.println(")");
 }
 
 #endif // HAS_BUTTON_LEDS 

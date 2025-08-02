@@ -4,3 +4,16 @@
 .vscode/launch.json
 .vscode/ipch
 .vscode/extensions.json
+
+# Python virtual environments
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Raspberry Pi specific
+*.log

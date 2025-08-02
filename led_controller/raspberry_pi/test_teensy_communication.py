@@ -128,28 +128,17 @@ class TeensyAMonitor:
         print("-" * 50)
         
         self.running = True
-        last_heartbeat = time.time()
         
         try:
             while self.running:
-                # Read any incoming packets
-                packet = self.read_packet()
-                if packet:
-                    self.handle_packet(packet)
-                
-                # Read any text output from Teensy (debug messages)
+                # Read text output from Teensy
                 if self.ser.in_waiting > 0:
                     try:
                         line = self.ser.readline().decode('utf-8').strip()
                         if line:
-                            print(f"Teensy Debug: {line}")
-                    except:
-                        pass
-                
-                # Check for heartbeat timeout
-                if time.time() - last_heartbeat > 5:
-                    print("⚠️  No heartbeat received in 5 seconds")
-                    last_heartbeat = time.time()
+                            self.handle_text_command(line)
+                    except Exception as e:
+                        print(f"Error reading line: {e}")
                 
                 time.sleep(0.1)
                 
@@ -158,34 +147,32 @@ class TeensyAMonitor:
         finally:
             self.running = False
     
-    def handle_packet(self, packet: CommandPacket):
-        """Handle received packet from Teensy A"""
+    def handle_text_command(self, line):
+        """Handle text commands from Teensy A"""
         current_time = time.strftime("%H:%M:%S")
         
-        if packet.command == CMD_BUTTON_PRESS:
-            button_id = packet.data[0] if packet.data_length > 0 else 0
-            print(f"[{current_time}] 🔘 BUTTON PRESSED: Button {button_id}")
-            
-            # Send LED feedback - light up the pressed button
-            colors = [(255,0,0), (0,255,0), (0,0,255), (255,255,0)]
-            if button_id < len(colors):
-                r, g, b = colors[button_id]
-                self.send_button_led_command(button_id, r, g, b)
+        if line.startswith("BUTTON_PRESS:"):
+            # Parse button press: "BUTTON_PRESS:1"
+            try:
+                button_id = int(line.split(":")[1])
+                print(f"[{current_time}] 🔘 BUTTON PRESSED: Button {button_id}")
+                
+                # Send LED feedback - light up the pressed button
+                colors = [(255,0,0), (0,255,0), (0,0,255), (255,255,0), (255,0,255), (0,255,255)]
+                if button_id >= 1 and button_id <= len(colors):
+                    r, g, b = colors[button_id - 1]  # Array is 0-based
+                    print(f"Would set button LED {button_id} to RGB({r},{g},{b})")
+                    # Note: LED command sending is disabled for now since we're using text mode
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing button press: {line} - {e}")
         
-        elif packet.command == CMD_SENSOR_DATA:
-            if packet.data_length >= 4:
-                sensor_id = packet.data[0]
-                analog_value = (packet.data[1] << 8) | packet.data[2]
-                digital_value = packet.data[3]
-                print(f"[{current_time}] 📊 SENSOR DATA: ID={sensor_id}, Analog={analog_value}, Digital={digital_value}")
-        
-        elif packet.command == CMD_HEARTBEAT:
-            if packet.data_length >= 4:
-                timestamp = (packet.data[0] << 24) | (packet.data[1] << 16) | (packet.data[2] << 8) | packet.data[3]
-                print(f"[{current_time}] 💓 HEARTBEAT: {timestamp}ms")
+        elif line.startswith("PIN_STATES:"):
+            # Debug info: "PIN_STATES:1,1,1,1,1,1"
+            print(f"[{current_time}] 📍 {line}")
         
         else:
-            print(f"[{current_time}] ❓ UNKNOWN COMMAND: 0x{packet.command:02X}")
+            # Any other debug output
+            print(f"[{current_time}] 🔧 Teensy Debug: {line}")
 
 def find_teensy_port():
     """Try to automatically find Teensy port"""

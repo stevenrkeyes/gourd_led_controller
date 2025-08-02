@@ -29,7 +29,7 @@ void loopTeensyA() {
     static unsigned long lastSensorRead = 0;
     if (millis() - lastSensorRead > 100) { // Read sensors every 100ms
         lastSensorRead = millis();
-        readAndSendSensorData();
+        // readAndSendSensorData();  // Commented out for clean debug output
     }
 }
 

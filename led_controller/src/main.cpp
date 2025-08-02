@@ -12,15 +12,23 @@
 unsigned long previousMillis = 0;
 const unsigned long interval = 500;  // 500ms interval
 bool ledState = false;
+bool is_button_teensy = true;
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting");
   pinMode(BOARD_LED_PIN, OUTPUT);
 
-  setupLedStrips();
-  setupEyes();
-  setupButtons();
+  // TODO: Set pin 23 (which is hardwired to ground on the buttons teensy) to INPUT_PULLUP.
+  // Then check its value.
+  // If value is LOW (pulled down by ground), we know we're the button teensy.
+  // If value is HIGH (unaffected), we know we're the LED teensy (set is_button_teensy to false).
+  if (is_button_teensy) {
+    setupButtons();
+    setupEyes();  
+  } else {
+    setupLedStrips();
+  }
 
   Serial.println("Setup complete");
 }
@@ -34,8 +42,11 @@ void loop() {
     digitalWrite(BOARD_LED_PIN, ledState);
   }
 
-  loopLedStrips();
-  loopEyes();
-  loopButtons();
+  if (is_button_teensy) {
+    loopButtons();
+    loopEyes();
+  } else {
+    loopLedStrips();
+  }
   delay(LOOP_DELAY_MS);
 }

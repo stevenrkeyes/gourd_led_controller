@@ -2,7 +2,7 @@
 
 #include <FastLED.h>
 
-constexpr int EYE_LEDS_PIN = 17;
+constexpr int EYE_LEDS_PIN = 22;
 constexpr int NUM_EYES = 6;
 constexpr int EYE_NUM_LEDS = 24;
 

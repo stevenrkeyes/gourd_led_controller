@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 """
 Individual LED strip test for troubleshooting hardware wiring
@@ -5,11 +6,15 @@ Tests each strip one by one with clear feedback
 """
 
 import serial
+import serial.tools.list_ports
 import time
 import struct
 
 # Communication protocol constants
 CMD_LED_PULSE = 0x01
+
+# Teensy B serial number
+TEENSY_B_SERIAL = "17656680"
 
 # Pin mapping for reference
 PIN_MAPPING = {
@@ -50,13 +55,39 @@ class CommandPacket:
                                  self.checksum)
         return packet_bytes
 
+def find_teensy_by_serial(target_serial):
+    """Find Teensy device by its serial number"""
+    print(f"🔍 Searching for Teensy with serial number: {target_serial}")
+    
+    ports = serial.tools.list_ports.comports()
+    
+    for port in ports:
+        print(f"   Checking {port.device}: {port.description}")
+        if port.serial_number == target_serial:
+            print(f"   ✅ Found Teensy B at {port.device}")
+            return port.device
+        if port.serial_number:
+            print(f"      Serial: {port.serial_number}")
+    
+    return None
+
 def test_individual_strips():
     """Test each LED strip individually for wiring diagnosis"""
     
     # Connect to Teensy B
     try:
-        teensy_b = serial.Serial('/dev/ttyACM0', 9600, timeout=0.1)
-        print(f"✅ Connected to Teensy B on /dev/ttyACM0")
+        # Find Teensy B by serial number
+        teensy_port = find_teensy_by_serial(TEENSY_B_SERIAL)
+        if not teensy_port:
+            print(f"❌ Could not find Teensy B with serial number {TEENSY_B_SERIAL}")
+            print("Available devices:")
+            ports = serial.tools.list_ports.comports()
+            for port in ports:
+                print(f"  {port.device}: {port.description} (Serial: {port.serial_number})")
+            return
+        
+        teensy_b = serial.Serial(teensy_port, 9600, timeout=0.1)
+        print(f"✅ Connected to Teensy B on {teensy_port}")
         
         # Wait for Teensy to complete startup
         print("⏳ Waiting for Teensy B to complete startup...")
@@ -122,8 +153,8 @@ def test_individual_strips():
             else:
                 print(f"   🔴 Strip {strip_id} not working")
             
-            print(f"   ⏳ Waiting 2 seconds before next test...")
-            time.sleep(2)
+            # print(f"   ⏳ Waiting 2 seconds before next test...")
+            # time.sleep(2)
         
         # Summary
         print("\n" + "="*60)

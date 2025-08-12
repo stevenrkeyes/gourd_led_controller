@@ -12,6 +12,7 @@
 #define CMD_BUTTON_PRESS 0x10
 #define CMD_BUTTON_LED 0x11
 #define CMD_SENSOR_DATA 0x20
+#define CMD_RING_LED_TEST 0x30  // Add this new command
 #define CMD_HEARTBEAT 0xFF
 
 // LED configuration

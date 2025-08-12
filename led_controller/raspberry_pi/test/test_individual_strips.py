@@ -14,7 +14,7 @@ import struct
 CMD_LED_PULSE = 0x01
 
 # Teensy B serial number
-TEENSY_B_SERIAL = "17656680"
+TEENSY_B_SERIAL = "4278530"
 
 # Pin mapping for reference
 PIN_MAPPING = {

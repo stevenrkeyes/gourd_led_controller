@@ -2,12 +2,23 @@
 
 #ifdef TEENSY_A
 
+
 #include "config.h"
 #include "pins_teensy_a.h"
 #include "shared/communication.h"
+#include <FastLED.h>
+
+// Ring LED array
+CRGB ringLeds[TOTAL_RING_LED_COUNT];
 
 void setupTeensyA() {
     Serial.println("Initializing Teensy A specific features");
+    
+    // Setup ring LEDs
+    FastLED.addLeds<WS2812, RING_LED_PIN, GRB>(ringLeds, TOTAL_RING_LED_COUNT);
+    FastLED.clear();
+    FastLED.show();
+    Serial.println("Ring LEDs initialized on pin 22");
     
     // Setup any additional sensors or hardware specific to Teensy A
     pinMode(SENSOR_DIGITAL_1_PIN, INPUT_PULLUP);
@@ -20,6 +31,9 @@ void loopTeensyA() {
         switch (packet.command) {
             case CMD_BUTTON_LED:
                 handleButtonLedCommand(packet);
+                break;
+            case CMD_RING_LED_TEST:
+                handleRingLedCommand(packet);
                 break;
             // Add more Teensy A specific command handling
         }
@@ -52,6 +66,46 @@ void handleButtonLedCommand(const CommandPacket& packet) {
     Serial.println(")");
     
     // This will call the button LED functions when they're implemented
+}
+
+void handleRingLedCommand(const CommandPacket& packet) {
+    uint8_t pattern = packet.data[0];
+    uint8_t r = packet.data[1];
+    uint8_t g = packet.data[2]; 
+    uint8_t b = packet.data[3];
+    
+    Serial.print("Ring LED command - Pattern: ");
+    Serial.print(pattern);
+    Serial.print(", RGB(");
+    Serial.print(r);
+    Serial.print(",");
+    Serial.print(g);
+    Serial.print(",");
+    Serial.print(b);
+    Serial.println(")");
+    
+    switch (pattern) {
+        case 0: case 1: case 2: case 3: // Solid colors
+            fill_solid(ringLeds, TOTAL_RING_LED_COUNT, CRGB(r, g, b));
+            break;
+        case 4: // Rainbow
+            fill_rainbow(ringLeds, TOTAL_RING_LED_COUNT, 0, 255/TOTAL_RING_LED_COUNT);
+            break;
+        case 5: // Chase pattern
+            FastLED.clear();
+            for (int i = 0; i < TOTAL_RING_LED_COUNT; i += 3) {
+                ringLeds[i] = CRGB(r, g, b);
+            }
+            break;
+        case 99: // Turn off
+            FastLED.clear();
+            break;
+        default:
+            Serial.println("Unknown ring LED pattern");
+            return;
+    }
+    
+    FastLED.show();
 }
 
 void readAndSendSensorData() {

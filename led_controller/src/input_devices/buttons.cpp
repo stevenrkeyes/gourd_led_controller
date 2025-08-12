@@ -45,7 +45,8 @@ void loopButtons() {
             Serial.print("\n");
         }
     }
-    
+
+#ifdef DEBUG_MODE
     // Detailed pin state info - every 15 seconds
     static unsigned long lastDebug = 0;
     if (millis() - lastDebug > 15000) {
@@ -93,6 +94,7 @@ void loopButtons() {
         Serial.println("   (1=HIGH/Released, 0=LOW/Pressed)");
         Serial.println("----------------------------------------");
     }
+#endif // DEBUG_MODE
 }
 
 #endif // HAS_BUTTONS 

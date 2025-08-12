@@ -17,7 +17,7 @@ struct LedPulse {
 DMAMEM int displayMemoryLeds[LED_STRIP_NUM_LEDS * 8];
 int drawingMemoryLeds[LED_STRIP_NUM_LEDS * 8];
 const int config = WS2811_RGBW | WS2811_800kHz;
-OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config, 8);
+OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config);
 
 #define MAX_ACTIVE_PULSES 8
 static LedPulse activePulses[MAX_ACTIVE_PULSES];

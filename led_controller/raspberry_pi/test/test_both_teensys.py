@@ -22,7 +22,8 @@ CMD_HEARTBEAT = 0xFF
 
 # Known Teensy serial numbers
 TEENSY_A_SERIAL = "14094100"  # Button controller
-TEENSY_B_SERIAL = "17656680"  # LED controller
+# TEENSY_B_SERIAL = "17656680"  # LED controller
+TEENSY_B_SERIAL = "4278530"  # LED controller
 
 class CommandPacket:
     """Binary command packet for Teensy B"""
@@ -164,7 +165,8 @@ class DualTeensyTester:
                             
                             # Forward as LED command to Teensy B
                             strip_id = button_id - 1  # Convert to 0-based
-                            self.send_led_command_to_teensy_b(strip_id)
+                            # self.send_led_command_to_teensy_b(strip_id)
+                            self.send_led_command_to_teensy_b(1)
                         
                 except Exception as e:
                     print(f"❌ Error reading Teensy A: {e}")

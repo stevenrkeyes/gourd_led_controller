@@ -1,0 +1,12 @@
+[Unit]
+Description=WhaleSong
+After=sound.target
+
+[Service]
+Type=simple
+ExecStart=/home/kerem/whalesong/start.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

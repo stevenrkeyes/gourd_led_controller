@@ -8,6 +8,7 @@
 
 #ifdef TEENSY_A
 #include "pins_teensy_a.h"
+#include "teensy_a/eyes.h"
 #endif
 
 // Array of Bounce objects for all buttons (dynamically initialized)
@@ -43,6 +44,12 @@ void loopButtons() {
             Serial.print("BUTTON_PRESS:");
             Serial.print(i + 1);
             Serial.print("\n");
+            setEyeStatus(i, true);
+        } else if (buttons[i].rose()) {
+            Serial.print("BUTTON_RELEASE:");
+            Serial.print(i + 1);
+            Serial.print("\n");
+            setEyeStatus(i, false);
         }
     }
 

@@ -1,4 +1,5 @@
 #include "eyes.h"
+#include "pins_teensy_a.h"
 
 CRGB eyeLeds[NUM_EYES * EYE_NUM_LEDS];
 // Tracks whether the button corresponding to each eye is pressed.

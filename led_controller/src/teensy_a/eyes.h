@@ -3,7 +3,6 @@
 
 #include <FastLED.h>
 
-#define EYE_LEDS_PIN 22
 #define NUM_EYES 4
 #define EYE_NUM_LEDS 24
 

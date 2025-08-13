@@ -15,4 +15,7 @@ const int BUTTON_LED_PINS[] = {};
 #define SENSOR_ANALOG_1_PIN A0
 #define SENSOR_DIGITAL_1_PIN 8
 
+// Eye LED pins
+#define EYE_LEDS_PIN 22
+
 #endif // PINS_TEENSY_A_H 

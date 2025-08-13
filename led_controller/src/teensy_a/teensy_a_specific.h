@@ -13,8 +13,10 @@
 
 void setupTeensyA();
 void loopTeensyA();
+
 void handleButtonLedCommand(const CommandPacket& packet);
-void handleRingLedCommand(const CommandPacket& packet); 
+// Not used anymore.
+// void handleRingLedCommand(const CommandPacket& packet); 
 void readAndSendSensorData();
 
 #endif // TEENSY_A

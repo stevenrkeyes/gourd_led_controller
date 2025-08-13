@@ -29,8 +29,7 @@ void loopTeensyA() {
             case CMD_BUTTON_LED:
                 handleButtonLedCommand(packet);
                 break;
-            // Is this needed? 
-            // Since the buttons are on this Teensy, we don't need the pi to send any commands here.
+            // Is this needed? Since the buttons are on this Teensy, we don't need the pi to send any commands here.
             // case CMD_RING_LED_TEST:
             //     handleRingLedCommand(packet);
             //     break;
@@ -69,45 +68,46 @@ void handleButtonLedCommand(const CommandPacket& packet) {
     // This will call the button LED functions when they're implemented
 }
 
-void handleRingLedCommand(const CommandPacket& packet) {
-    uint8_t pattern = packet.data[0];
-    uint8_t r = packet.data[1];
-    uint8_t g = packet.data[2]; 
-    uint8_t b = packet.data[3];
+// Is this needed? Since the buttons are on this Teensy, we don't need the pi to send any commands here.
+// void handleRingLedCommand(const CommandPacket& packet) {
+//     uint8_t pattern = packet.data[0];
+//     uint8_t r = packet.data[1];
+//     uint8_t g = packet.data[2]; 
+//     uint8_t b = packet.data[3];
     
-    Serial.print("Ring LED command - Pattern: ");
-    Serial.print(pattern);
-    Serial.print(", RGB(");
-    Serial.print(r);
-    Serial.print(",");
-    Serial.print(g);
-    Serial.print(",");
-    Serial.print(b);
-    Serial.println(")");
+//     Serial.print("Ring LED command - Pattern: ");
+//     Serial.print(pattern);
+//     Serial.print(", RGB(");
+//     Serial.print(r);
+//     Serial.print(",");
+//     Serial.print(g);
+//     Serial.print(",");
+//     Serial.print(b);
+//     Serial.println(")");
     
-    switch (pattern) {
-        case 0: case 1: case 2: case 3: // Solid colors
-            fill_solid(ringLeds, TOTAL_RING_LED_COUNT, CRGB(r, g, b));
-            break;
-        case 4: // Rainbow
-            fill_rainbow(ringLeds, TOTAL_RING_LED_COUNT, 0, 255/TOTAL_RING_LED_COUNT);
-            break;
-        case 5: // Chase pattern
-            FastLED.clear();
-            for (int i = 0; i < TOTAL_RING_LED_COUNT; i += 3) {
-                ringLeds[i] = CRGB(r, g, b);
-            }
-            break;
-        case 99: // Turn off
-            FastLED.clear();
-            break;
-        default:
-            Serial.println("Unknown ring LED pattern");
-            return;
-    }
+//     switch (pattern) {
+//         case 0: case 1: case 2: case 3: // Solid colors
+//             fill_solid(ringLeds, TOTAL_RING_LED_COUNT, CRGB(r, g, b));
+//             break;
+//         case 4: // Rainbow
+//             fill_rainbow(ringLeds, TOTAL_RING_LED_COUNT, 0, 255/TOTAL_RING_LED_COUNT);
+//             break;
+//         case 5: // Chase pattern
+//             FastLED.clear();
+//             for (int i = 0; i < TOTAL_RING_LED_COUNT; i += 3) {
+//                 ringLeds[i] = CRGB(r, g, b);
+//             }
+//             break;
+//         case 99: // Turn off
+//             FastLED.clear();
+//             break;
+//         default:
+//             Serial.println("Unknown ring LED pattern");
+//             return;
+//     }
     
-    FastLED.show();
-}
+//     FastLED.show();
+// }
 
 void readAndSendSensorData() {
     // Read analog sensor

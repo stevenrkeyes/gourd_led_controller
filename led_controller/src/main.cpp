@@ -49,10 +49,8 @@ void setup() {
 #endif
 
 #ifdef TEENSY_B
-  #ifndef TEST_MODE
-    setupLedStrips();
-    setupEffects();
-  #endif
+  setupLedStrips();
+  setupEffects();
 #endif
 
 #ifdef TEENSY_C
@@ -89,10 +87,8 @@ void loop() {
 #endif
 
 #ifdef TEENSY_B
-  #ifndef TEST_MODE
-    loopLedStrips();
-    loopEffects();
-  #endif
+  loopLedStrips();
+  loopEffects();
 #endif
 
 #ifdef TEENSY_C

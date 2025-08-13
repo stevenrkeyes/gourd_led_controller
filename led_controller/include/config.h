@@ -25,10 +25,7 @@
 #endif
 
 #ifdef TEENSY_B
-// In TEST_MODE, no LED functionality - just communication testing
-  #ifndef TEST_MODE
-    #define NUM_LED_STRIPS 8
-  #endif
+  #define NUM_LED_STRIPS 8
 #endif
 
 #ifdef TEENSY_C

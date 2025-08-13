@@ -1,7 +1,9 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-#include "pins.h"
+#ifdef HAS_BUTTONS
+
+#include <Arduino.h>
 
 class Bounce;
 
@@ -12,8 +14,9 @@ constexpr int NUM_BUTTONS = 4;
 const std::vector<int> ROW_PINS {22, 23};
 const std::vector<int> COL_PINS {0, 1};
 
-// Add your declarations here
 void setupButtons();
 void loopButtons();
+
+#endif // HAS_BUTTONS
 
 #endif // BUTTONS_H 

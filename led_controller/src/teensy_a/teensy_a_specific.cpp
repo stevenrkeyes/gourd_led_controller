@@ -1,4 +1,5 @@
 #include "teensy_a_specific.h"
+#include "eyes.h"
 
 #ifdef TEENSY_A
 
@@ -14,11 +15,7 @@ CRGB ringLeds[TOTAL_RING_LED_COUNT];
 void setupTeensyA() {
     Serial.println("Initializing Teensy A specific features");
     
-    // Setup ring LEDs
-    FastLED.addLeds<WS2812, RING_LED_PIN, GRB>(ringLeds, TOTAL_RING_LED_COUNT);
-    FastLED.clear();
-    FastLED.show();
-    Serial.println("Ring LEDs initialized on pin 22");
+    setupEyes();
     
     // Setup any additional sensors or hardware specific to Teensy A
     pinMode(SENSOR_DIGITAL_1_PIN, INPUT_PULLUP);
@@ -32,12 +29,16 @@ void loopTeensyA() {
             case CMD_BUTTON_LED:
                 handleButtonLedCommand(packet);
                 break;
-            case CMD_RING_LED_TEST:
-                handleRingLedCommand(packet);
-                break;
+            // Is this needed? 
+            // Since the buttons are on this Teensy, we don't need the pi to send any commands here.
+            // case CMD_RING_LED_TEST:
+            //     handleRingLedCommand(packet);
+            //     break;
             // Add more Teensy A specific command handling
         }
     }
+
+    loopEyes();
     
     // Read sensors and send to Pi
     static unsigned long lastSensorRead = 0;

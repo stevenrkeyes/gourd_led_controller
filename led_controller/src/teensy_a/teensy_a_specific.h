@@ -1,11 +1,6 @@
 #ifndef TEENSY_A_SPECIFIC_H
 #define TEENSY_A_SPECIFIC_H
 
-#define RING_LED_PIN 22
-#define NUM_RINGS 4            // Number of ring LEDs
-#define NUM_LEDS_PER_RING 24 
-#define TOTAL_RING_LED_COUNT (NUM_RINGS * NUM_LEDS_PER_RING)  // Total LEDs across all rings 
-
 #ifdef TEENSY_A
 
 #include <Arduino.h>

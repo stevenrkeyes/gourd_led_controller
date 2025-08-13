@@ -9,9 +9,6 @@
 #include "shared/communication.h"
 #include <FastLED.h>
 
-// Ring LED array
-CRGB ringLeds[TOTAL_RING_LED_COUNT];
-
 void setupTeensyA() {
     Serial.println("Initializing Teensy A specific features");
     

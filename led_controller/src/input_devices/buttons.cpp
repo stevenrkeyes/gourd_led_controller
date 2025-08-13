@@ -1,14 +1,11 @@
 #include "buttons.h"
 #include "config.h"
 
-#ifdef HAS_BUTTONS
+#ifdef TEENSY_A
 
 #include <Bounce2.h>
 #include "shared/communication.h"
-
-#ifdef TEENSY_A
 #include "pins_teensy_a.h"
-#endif
 
 // Array of Bounce objects for all buttons (dynamically initialized)
 Bounce buttons[NUM_BUTTONS];
@@ -97,4 +94,4 @@ void loopButtons() {
 #endif // DEBUG_MODE
 }
 
-#endif // HAS_BUTTONS 
+#endif // TEENSY_A 

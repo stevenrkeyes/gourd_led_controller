@@ -1,17 +1,12 @@
 #include "octo_led_strips.h"
 #include "config.h"
 
-#ifdef HAS_OCTO_LED_STRIPS
+#if defined(TEENSY_B) || defined(TEENSY_C)
 
 #include <OctoWS2811.h>
 #include "shared/communication.h"
 
-// Define LedPulse struct
-struct LedPulse {
-    unsigned long startTime;
-    int strip;
-    bool active;
-};
+// LedPulse struct is defined in header
 
 // OctoWS2811 setup for 8 strips
 DMAMEM int displayMemoryLeds[LED_STRIP_NUM_LEDS * 8];
@@ -98,4 +93,4 @@ void loopLedStrips() {
     leds.show();
 }
 
-#endif // HAS_OCTO_LED_STRIPS 
+#endif // TEENSY_B || TEENSY_C 

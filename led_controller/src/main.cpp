@@ -6,30 +6,22 @@
 #ifdef TEENSY_A
   #include "pins_teensy_a.h"
   #include "teensy_a/teensy_a_specific.h"
-  #ifdef HAS_BUTTONS
-    #include "input_devices/buttons.h"
-  #endif
-  #ifdef HAS_BUTTON_LEDS
-    #include "input_devices/button_leds.h"
-  #endif
+  #include "input_devices/buttons.h"
+  #include "input_devices/button_leds.h"
 #endif
 
 #ifdef TEENSY_B
   #include "pins_teensy_b.h"
   #include "teensy_b/teensy_b_specific.h"
-  #ifdef HAS_OCTO_LED_STRIPS
-    #include "led_controllers/octo_led_strips.h"
-    #include "led_controllers/effects.h"
-  #endif
+  #include "led_controllers/octo_led_strips.h"
+  #include "led_controllers/effects.h"
 #endif
 
 #ifdef TEENSY_C
   #include "pins_teensy_c.h"
   #include "teensy_c/teensy_c_specific.h"
-  #ifdef HAS_OCTO_LED_STRIPS
-    #include "led_controllers/octo_led_strips.h"
-    #include "led_controllers/effects.h"
-  #endif
+  #include "led_controllers/octo_led_strips.h"
+  #include "led_controllers/effects.h"
 #endif
 
 unsigned long previousMillis = 0;
@@ -50,16 +42,20 @@ void setup() {
   pinMode(BOARD_LED_PIN, OUTPUT);
   initCommunication();
 
-  // Initialize based on capabilities, not just device
-#ifdef HAS_BUTTONS
+  // Initialize device-specific components
+#ifdef TEENSY_A
   setupButtons();
-#endif
-
-#ifdef HAS_BUTTON_LEDS
   setupButtonLeds();
 #endif
 
-#ifdef HAS_OCTO_LED_STRIPS
+#ifdef TEENSY_B
+  #ifndef TEST_MODE
+    setupLedStrips();
+    setupEffects();
+  #endif
+#endif
+
+#ifdef TEENSY_C
   setupLedStrips();
   setupEffects();
 #endif
@@ -86,16 +82,20 @@ void loop() {
     // sendHeartbeat();  // Disabled - causing text/binary interference
   }
 
-  // Run based on capabilities
-#ifdef HAS_BUTTONS
+  // Run device-specific loops
+#ifdef TEENSY_A
   loopButtons();
-#endif
-
-#ifdef HAS_BUTTON_LEDS
   loopButtonLeds();
 #endif
 
-#ifdef HAS_OCTO_LED_STRIPS
+#ifdef TEENSY_B
+  #ifndef TEST_MODE
+    loopLedStrips();
+    loopEffects();
+  #endif
+#endif
+
+#ifdef TEENSY_C
   loopLedStrips();
   loopEffects();
 #endif

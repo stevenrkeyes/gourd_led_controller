@@ -3,9 +3,9 @@
 
 #include <FastLED.h>
 
-constexpr int EYE_LEDS_PIN = 22;
-constexpr int NUM_EYES = 4;
-constexpr int EYE_NUM_LEDS = 24;
+#define EYE_LEDS_PIN 22
+#define NUM_EYES 4
+#define EYE_NUM_LEDS 24
 
 extern CRGB eyeLeds[NUM_EYES * EYE_NUM_LEDS];
 

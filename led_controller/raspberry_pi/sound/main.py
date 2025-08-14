@@ -363,7 +363,7 @@ try:
             line = teensy.readline().decode('utf-8').strip()
             # print(line)
             if "BUTTON_PRESS:" in line:
-                button_num = line.split(":")[1]
+                button_num = int(line.split(":")[1])
                 print(f"Button {button_num} pressed!")
                 trigger(button_num)
                 

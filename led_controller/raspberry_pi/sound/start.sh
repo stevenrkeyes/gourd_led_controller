@@ -33,4 +33,4 @@ fi
 
 echo "-------------------------------"
 # TODO: Update the path here to match the absolute path of the repo on your system.
-/home/kerem/whalesong/.venv/bin/python /home/kerem/whalesong/main.py
+/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/python /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/main.py

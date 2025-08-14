@@ -68,8 +68,29 @@ class KeyboardInputs(Inputs):
 
 # 1. --- Server Setup ---
 # Initialize and boot the pyo audio server.
-s = pyo.Server(audio="jack", nchnls=4).boot()
-s.start()
+s = pyo.Server(duplex=0, buffersize=2048, nchnls=2)
+s.deactivateMidi()
+devices = pyo.pa_get_devices_infos()
+device_index = -1
+
+for d in devices:
+    for idx, dev_info in d.items():
+        # TODO: Update this to detect the devices we want
+        if "name" in dev_info and "USB Audio Device" in dev_info["name"]:
+            device_index = idx
+            break
+    if device_index != -1:
+        break
+
+if device_index == -1:
+    device_index = 0
+
+s.setInOutDevice(device_index)
+s.boot()
+
+# TODO: Revert to this for 4 channels.
+# s = pyo.Server(audio="jack", nchnls=4).boot()
+# s.start()
 
 
 @dataclass
@@ -248,6 +269,8 @@ for bank in freq_banks:
             )
         )
 # Mix the output of all voices together. We use a stereo mix here.
+mixed_voices = pyo.Mix([v.osc for bank in voice_banks for v in bank], voices=2)
+# TODO: Revert to this for 4 channels.
 mixed_voices = pyo.Mix([v.osc for bank in voice_banks for v in bank], voices=4)
 
 

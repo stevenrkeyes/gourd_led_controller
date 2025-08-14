@@ -10,7 +10,7 @@ import serial
 import serial.tools.list_ports
 import time
 
-
+from communication.monitor_teensy import DualTeensyTester
 class Inputs:
     def listen(self):
         raise NotImplementedError
@@ -341,33 +341,35 @@ def find_teensy_a():
     return None
 
 try:
-    print("🔍 Looking for Teensy A...")
+    tester = DualTeensyTester(sound_callback=trigger)
+    tester.test_communication()
+    # print("🔍 Looking for Teensy A...")
     
-    # Find Teensy A
-    port = find_teensy_a()
-    if not port:
-        print("❌ Teensy A not found!")
-        raise KeyboardInterrupt
+    # # Find Teensy A
+    # port = find_teensy_a()
+    # if not port:
+    #     print("❌ Teensy A not found!")
+    #     raise KeyboardInterrupt
     
-    print(f"✅ Found Teensy A on {port}")
+    # print(f"✅ Found Teensy A on {port}")
 
-    # Connect
-    teensy = serial.Serial(port, 9600, timeout=0.1)
-    time.sleep(2)  # Wait for startup
+    # # Connect
+    # teensy = serial.Serial(port, 9600, timeout=0.1)
+    # time.sleep(2)  # Wait for startup
     
-    print("📋 Listening for button presses... (Press Ctrl+C to stop)")
-    print("-" * 40)
+    # print("📋 Listening for button presses... (Press Ctrl+C to stop)")
+    # print("-" * 40)
     
-    while True:
-        if teensy.in_waiting > 0:
-            line = teensy.readline().decode('utf-8').strip()
-            # print(line)
-            if "BUTTON_PRESS:" in line:
-                button_num = int(line.split(":")[1])
-                print(f"Button {button_num} pressed!")
-                trigger(button_num)
+    # while True:
+    #     if teensy.in_waiting > 0:
+    #         line = teensy.readline().decode('utf-8').strip()
+    #         # print(line)
+    #         if "BUTTON_PRESS:" in line:
+    #             button_num = int(line.split(":")[1])
+    #             print(f"Button {button_num} pressed!")
+    #             trigger(button_num)
                 
-        time.sleep(0.1)
+    #     time.sleep(0.1)
 
 except KeyboardInterrupt:
     print("\nStopping audio server...")

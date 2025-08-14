@@ -26,9 +26,9 @@ sleep 1
 
 echo "Starting a new jackd process in the background..."
 
-# Use ALSA with the Headphones device (card 2) for actual audio output
-# The Headphones device supports both capture and playback natively
-JACK_NO_AUDIO_RESERVATION=1 jackd -d alsa -d hw:2,0 -r 44100 -p 1024 -C 0 -P 2 &
+# Use ALSA with the Headphones device by name instead of hardware spec
+# This avoids the parsing issues with hw:X,Y format
+JACK_NO_AUDIO_RESERVATION=1 jackd -d alsa -d "bcm2835 Headphones" -r 44100 -p 1024 -C 0 -P 2 &
 
 # Give jackd more time to fully initialize and be ready for connections
 echo "Waiting for JACK to be ready..."

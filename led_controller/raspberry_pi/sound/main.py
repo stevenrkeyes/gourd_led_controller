@@ -6,6 +6,9 @@ import threading
 import time
 import random
 from typing import Callable
+import serial
+import serial.tools.list_ports
+import time
 
 
 class Inputs:
@@ -291,7 +294,7 @@ def trigger(button_index):
         else:
             whale.amplitude.boost(boost_amount=0.05)
 
-
+'''
 inputs: Inputs = GPIOButtonInputs(
     pins={
         7: lambda: trigger(0),
@@ -304,6 +307,7 @@ inputs: Inputs = GPIOButtonInputs(
         18: lambda: trigger(7),
     }
 )
+'''
 
 inputs: Inputs = KeyboardInputs(
     keys={
@@ -326,9 +330,45 @@ inputs: Inputs = KeyboardInputs(
     }
 )
 
+TEENSY_A_SERIAL = "14094100"
+
+def find_teensy_a():
+    """Find Teensy A by serial number"""
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if port.serial_number == TEENSY_A_SERIAL:
+            return port.device
+    return None
 
 try:
-    inputs.listen()
+    print("🔍 Looking for Teensy A...")
+    
+    # Find Teensy A
+    port = find_teensy_a()
+    if not port:
+        print("❌ Teensy A not found!")
+        raise KeyboardInterrupt
+    
+    print(f"✅ Found Teensy A on {port}")
+
+    # Connect
+    teensy = serial.Serial(port, 9600, timeout=0.1)
+    time.sleep(2)  # Wait for startup
+    
+    print("📋 Listening for button presses... (Press Ctrl+C to stop)")
+    print("-" * 40)
+    
+    while True:
+        if teensy.in_waiting > 0:
+            line = teensy.readline().decode('utf-8').strip()
+            # print(line)
+            if "BUTTON_PRESS:" in line:
+                button_num = line.split(":")[1]
+                print(f"Button {button_num} pressed!")
+                trigger(button_num)
+                
+        time.sleep(0.1)
+
 except KeyboardInterrupt:
     print("\nStopping audio server...")
     s.stop()

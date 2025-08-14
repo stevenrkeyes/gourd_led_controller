@@ -60,7 +60,7 @@ def detect_teensy_ports() -> Dict[str, str]:
     """
     try:
         # Run pio device list and parse output
-        result = subprocess.run(['pio', 'device', 'list'], 
+        result = subprocess.run(['platformio', 'device', 'list'], 
                               capture_output=True, text=True, check=True)
         
         ports = {}

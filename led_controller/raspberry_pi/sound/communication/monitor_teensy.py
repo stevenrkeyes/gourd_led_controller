@@ -60,7 +60,10 @@ def detect_teensy_ports() -> Dict[str, str]:
     """
     try:
         # Run pio device list and parse output
-        result = subprocess.run(['platformio', 'device', 'list'], 
+        # Use the full path to platformio in the virtual environment
+        # TODO: Clean this up.
+        pio_path = '/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/platformio'
+        result = subprocess.run([pio_path, 'device', 'list'], 
                               capture_output=True, text=True, check=True)
         
         ports = {}

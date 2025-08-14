@@ -14,14 +14,21 @@ else
   echo "No running jackd process found. Proceeding to start a new one."
 fi
 
+# Also check for alsa_out processes
+if pgrep -x "alsa_out" >/dev/null; then
+  echo "Found running alsa_out processes. Terminating them now..."
+  killall -w alsa_out
+  echo "alsa_out processes terminated."
+fi
+
 # A brief pause to ensure system resources are freed up.
 sleep 1
 
 echo "Starting a new jackd process in the background..."
 
-# Use the dummy driver to avoid ALSA device parsing issues
-# This creates a virtual audio device that we can route to ALSA later if needed
-JACK_NO_AUDIO_RESERVATION=1 jackd -d dummy -r 44100 -p 1024 -C 0 -P 2 &
+# Use ALSA with the Headphones device (card 2) for actual audio output
+# The Headphones device supports both capture and playback natively
+JACK_NO_AUDIO_RESERVATION=1 jackd -d alsa -d hw:2,0 -r 44100 -p 1024 -C 0 -P 2 &
 
 # Give jackd more time to fully initialize and be ready for connections
 echo "Waiting for JACK to be ready..."
@@ -46,7 +53,6 @@ fi
 echo "-------------------------------"
 echo "Starting Python script with JACK audio backend..."
 
-# Run the Python script using uv to ensure it uses the virtual environment
-# uv run python main.py  # doesn't work in sudo mode.
+# Run the Python script using the virtual environment
 /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/python /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/main.py
 

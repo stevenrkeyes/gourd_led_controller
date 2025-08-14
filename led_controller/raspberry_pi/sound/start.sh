@@ -47,4 +47,6 @@ echo "-------------------------------"
 echo "Starting Python script with JACK audio backend..."
 
 # Run the Python script using uv to ensure it uses the virtual environment
-uv run python main.py
+# uv run python main.py  # doesn't work in sudo mode.
+/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/python /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/main.py
+

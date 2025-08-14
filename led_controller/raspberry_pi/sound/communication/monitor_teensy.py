@@ -148,11 +148,8 @@ class DualTeensyTester:
             
         packet = CommandPacket(CMD_LED_PULSE, 1, [strip_id])
         packet_bytes = packet.to_bytes()
-
-        print("still trying")
         
         try:
-            print("about to write")
             self.teensy_b.write(packet_bytes)
             print(f"📤 Sent LED pulse command to Teensy B (strip {strip_id})")
         except Exception as e:

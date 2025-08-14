@@ -4,7 +4,7 @@ After=sound.target
 
 [Service]
 Type=simple
-ExecStart=/home/kerem/whalesong/start.sh
+ExecStart=/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/start.sh
 Restart=on-failure
 RestartSec=5
 

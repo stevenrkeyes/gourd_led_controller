@@ -19,7 +19,9 @@ sleep 1
 
 echo "Starting a new jackd process in the background..."
 
-JACK_NO_AUDIO_RESERVATION=1 jackd -d alsa -d fourplay -r 44100 -p 1024 &
+# Use the dummy driver to avoid ALSA device parsing issues
+# This creates a virtual audio device that we can route to ALSA later if needed
+JACK_NO_AUDIO_RESERVATION=1 jackd -d dummy -r 44100 -p 1024 -C 0 -P 2 &
 
 # Give jackd a couple of seconds to initialize.
 sleep 2
@@ -29,8 +31,11 @@ if pgrep -x "jackd" >/dev/null; then
   echo "✅ Success! JACK server is now running with PID: $(pgrep -x "jackd")"
 else
   echo "❌ Error: Failed to start jackd. Check your parameters or system logs for more info."
+  exit 1
 fi
 
 echo "-------------------------------"
-# TODO: Update the path here to match the absolute path of the repo on your system.
-/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/python /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/main.py
+echo "Starting Python script with JACK audio backend..."
+
+# Run the Python script using uv to ensure it uses the virtual environment
+uv run python main.py

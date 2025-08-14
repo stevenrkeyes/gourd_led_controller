@@ -143,6 +143,8 @@ class DualTeensyTester:
         if not self.teensy_b:
             print("❌ Teensy B not connected")
             return
+
+        print("Teensy b apparently connected...")
             
         packet = CommandPacket(CMD_LED_PULSE, 1, [strip_id])
         packet_bytes = packet.to_bytes()
@@ -170,7 +172,7 @@ class DualTeensyTester:
                             
                             # Forward as LED command to Teensy B
                             strip_id = button_id - 1  # Convert to 0-based
-                            # self.send_led_command_to_teensy_b(strip_id)
+                            self.send_led_command_to_teensy_b(strip_id)
                             self.sound_callback(strip_id)
                         
                 except Exception as e:

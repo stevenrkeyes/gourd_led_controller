@@ -23,8 +23,17 @@ echo "Starting a new jackd process in the background..."
 # This creates a virtual audio device that we can route to ALSA later if needed
 JACK_NO_AUDIO_RESERVATION=1 jackd -d dummy -r 44100 -p 1024 -C 0 -P 2 &
 
-# Give jackd a couple of seconds to initialize.
-sleep 2
+# Give jackd more time to fully initialize and be ready for connections
+echo "Waiting for JACK to be ready..."
+sleep 5
+
+# Test if JACK is responding
+if jack_control status >/dev/null 2>&1; then
+  echo "✅ JACK is responding and ready for connections"
+else
+  echo "❌ JACK is not responding, waiting a bit more..."
+  sleep 3
+fi
 
 # Final check to confirm the new process has started.
 if pgrep -x "jackd" >/dev/null; then

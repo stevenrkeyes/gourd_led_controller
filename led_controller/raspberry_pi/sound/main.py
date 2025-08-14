@@ -69,7 +69,9 @@ class KeyboardInputs(Inputs):
 # 1. --- Server Setup ---
 # Initialize and boot the pyo audio server.
 # Use JACK for 2-channel audio with the dummy driver (playback-only)
-s = pyo.Server(audio="jack", nchnls=2).boot()
+s = pyo.Server(audio="jack", nchnls=2, duplex=0, buffersize=1024, sr=44100)
+s.deactivateMidi()
+s.boot()
 s.start()
 
 

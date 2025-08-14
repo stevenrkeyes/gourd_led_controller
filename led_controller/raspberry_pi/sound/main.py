@@ -90,7 +90,8 @@ s.boot()
 
 # TODO: Revert to this for 4 channels.
 # s = pyo.Server(audio="jack", nchnls=4).boot()
-# s.start()
+
+s.start()
 
 
 @dataclass

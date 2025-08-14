@@ -10,6 +10,7 @@ import struct
 import threading
 import subprocess
 import re
+import platformio as pio
 from typing import Optional, Dict
 
 # Communication protocol constants

@@ -9,15 +9,14 @@ import time
 
 # Import centralized configuration and device utilities
 from config import TEENSY_A_SERIAL
-from device_utils import find_teensy_a
+from device_utils import find_teensy
 
 def main():
     print("🔍 Looking for Teensy A...")
     
-    # Find Teensy A using centralized utility
-    port = find_teensy_a(verbose=True)
+    # Find Teensy A using elegant ID-based approach
+    port = find_teensy("a")
     if not port:
-        print("❌ Teensy A not found!")
         return
     
     print(f"✅ Found Teensy A on {port}")

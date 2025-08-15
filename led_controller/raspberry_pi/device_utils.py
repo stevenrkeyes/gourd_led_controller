@@ -10,6 +10,7 @@ from typing import Optional, Dict, List
 from config import (
     TEENSY_A_SERIAL,
     TEENSY_B_SERIAL,
+    TEENSY_MAPPING,
     TEENSY_USB_VID_PID
 )
 
@@ -48,30 +49,37 @@ def find_teensy_by_serial(target_serial: str, verbose: bool = True) -> Optional[
     return None
 
 
-def find_teensy_a(verbose: bool = True) -> Optional[str]:
+def find_teensy(teensy_id: str, verbose: bool = True) -> Optional[str]:
     """
-    Find Teensy A by its configured serial number
+    Find a Teensy device by its ID with built-in error handling
     
     Args:
-        verbose: Whether to print search progress
+        teensy_id: Teensy identifier ("a", "b", "c", etc.)
+        verbose: Whether to print search progress and errors
         
     Returns:
         Device path or None if not found
     """
-    return find_teensy_by_serial(TEENSY_A_SERIAL, verbose)
-
-
-def find_teensy_b(verbose: bool = True) -> Optional[str]:
-    """
-    Find Teensy B by its configured serial number
+    teensy_id = teensy_id.lower()
     
-    Args:
-        verbose: Whether to print search progress
-        
-    Returns:
-        Device path or None if not found
-    """
-    return find_teensy_by_serial(TEENSY_B_SERIAL, verbose)
+    if teensy_id not in TEENSY_MAPPING:
+        if verbose:
+            print(f"❌ Unknown Teensy ID: '{teensy_id}'")
+            print(f"💡 Available Teensy IDs: {list(TEENSY_MAPPING.keys())}")
+        return None
+    
+    serial_number = TEENSY_MAPPING[teensy_id]
+    port = find_teensy_by_serial(serial_number, verbose)
+    
+    if not port and verbose:
+        teensy_name = f"Teensy {teensy_id.upper()}"
+        print(f"❌ {teensy_name} not found!")
+        print(f"💡 Make sure {teensy_name} is connected and has the correct serial number")
+    
+    return port
+
+
+# Removed find_teensy_a() and find_teensy_b() - use find_teensy("a") and find_teensy("b") instead
 
 
 def detect_all_teensys(verbose: bool = True) -> Dict[str, str]:
@@ -89,13 +97,11 @@ def detect_all_teensys(verbose: bool = True) -> Dict[str, str]:
     if verbose:
         print("🔍 Detecting Teensy devices...")
     
-    teensy_a = find_teensy_a(verbose)
-    if teensy_a:
-        ports['teensy_a'] = teensy_a
-    
-    teensy_b = find_teensy_b(verbose)
-    if teensy_b:
-        ports['teensy_b'] = teensy_b
+    # Dynamically detect all configured Teensys
+    for teensy_id in TEENSY_MAPPING.keys():
+        port = find_teensy(teensy_id, verbose)
+        if port:
+            ports[f'teensy_{teensy_id}'] = port
     
     return ports
 
@@ -103,34 +109,6 @@ def detect_all_teensys(verbose: bool = True) -> Dict[str, str]:
 
 
 
-def find_any_teensy_port(verbose: bool = True) -> Optional[str]:
-    """
-    Find any Teensy-like device (fallback for scripts that don't care about specific serial numbers)
-    
-    Args:
-        verbose: Whether to print search progress
-        
-    Returns:
-        Device path or None if not found
-    """
-    if verbose:
-        print("🔍 Looking for any Teensy-like device...")
-    
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        # Look for common Teensy/USB indicators
-        if ('USB' in port.description or 
-            'ACM' in port.device or 
-            'tty' in port.device or
-            TEENSY_USB_VID_PID in str(port.hwid) if hasattr(port, 'hwid') else False):
-            
-            if verbose:
-                print(f"Found potential Teensy port: {port.device} - {port.description}")
-            return port.device
-    
-    if verbose:
-        print("❌ No Teensy-like devices found")
-    return None
 
 
 def get_all_serial_ports() -> List[Dict[str, str]]:

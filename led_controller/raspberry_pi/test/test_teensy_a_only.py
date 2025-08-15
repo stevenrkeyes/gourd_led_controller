@@ -5,39 +5,19 @@ Identifies Teensy A by serial number and provides detailed button testing
 """
 
 import serial
-import serial.tools.list_ports
 import time
 
-# Import centralized configuration
+# Import centralized configuration and device utilities
 from config import TEENSY_A_SERIAL
-
-def find_teensy_by_serial(target_serial):
-    """Find Teensy device by its serial number"""
-    print(f"🔍 Searching for Teensy with serial number: {target_serial}")
-    
-    ports = serial.tools.list_ports.comports()
-    
-    for port in ports:
-        print(f"   Checking {port.device}: {port.description}")
-        if port.serial_number == target_serial:
-            print(f"   ✅ Found Teensy A at {port.device}")
-            return port.device
-        if port.serial_number:
-            print(f"      Serial: {port.serial_number}")
-    
-    return None
+from device_utils import find_teensy, print_available_ports
 
 def test_teensy_a_buttons():
     """Test up to 16 buttons on Teensy A with detailed tracking"""
     
-    # Find Teensy A by serial number
-    teensy_port = find_teensy_by_serial(TEENSY_A_SERIAL)
+    # Find Teensy A using elegant ID-based approach
+    teensy_port = find_teensy("a")
     if not teensy_port:
-        print(f"❌ Could not find Teensy A with serial number {TEENSY_A_SERIAL}")
-        print("Available devices:")
-        ports = serial.tools.list_ports.comports()
-        for port in ports:
-            print(f"  {port.device}: {port.description} (Serial: {port.serial_number})")
+        print_available_ports()
         return
     
     try:

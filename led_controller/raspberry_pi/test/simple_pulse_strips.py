@@ -9,14 +9,13 @@ import time
 
 # Import centralized configuration and utilities
 from config import TEENSY_B_SERIAL, CMD_LED_PULSE
-from device_utils import find_teensy_b
+from device_utils import find_teensy
 from protocol import create_led_pulse_packet
 
 def main():
-    # Connect to Teensy B using centralized utility
-    teensy_port = find_teensy_b(verbose=True)
+    # Connect to Teensy B using elegant ID-based approach
+    teensy_port = find_teensy("b")
     if not teensy_port:
-        print(f"❌ Could not find Teensy B with serial {TEENSY_B_SERIAL}")
         return
     
     teensy = serial.Serial(teensy_port, 9600, timeout=0.1)

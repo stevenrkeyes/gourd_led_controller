@@ -10,24 +10,21 @@ import time
 
 # Import centralized configuration and utilities
 from config import TEENSY_B_SERIAL, CMD_LED_PULSE, LED_STRIP_PIN_MAPPING
-from device_utils import find_teensy_by_serial, print_available_ports
+from device_utils import find_teensy, print_available_ports
 from protocol import create_led_pulse_packet
 
 # Pin mapping for reference (now imported from config)
 PIN_MAPPING = LED_STRIP_PIN_MAPPING
 
-# Removed duplicated CommandPacket and find_teensy_by_serial - now using centralized utilities
 
 def test_individual_strips():
     """Test each LED strip individually for wiring diagnosis"""
     
     # Connect to Teensy B
     try:
-        # Find Teensy B by serial number using centralized utility
-        teensy_port = find_teensy_by_serial(TEENSY_B_SERIAL, verbose=True)
+        # Find Teensy B using elegant ID-based approach
+        teensy_port = find_teensy("b")
         if not teensy_port:
-            print(f"❌ Could not find Teensy B with serial number {TEENSY_B_SERIAL}")
-            print("Available devices:")
             print_available_ports()
             return
         

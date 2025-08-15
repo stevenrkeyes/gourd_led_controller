@@ -12,6 +12,8 @@ from typing import Optional
 
 # Import centralized configuration and utilities
 from config import (
+    TEENSY_A_SERIAL,
+    TEENSY_B_SERIAL,
     CMD_LED_PULSE,
     CMD_LED_EFFECT,
     CMD_BUTTON_PRESS,
@@ -19,7 +21,7 @@ from config import (
     CMD_SENSOR_DATA,
     CMD_HEARTBEAT
 )
-from device_utils import find_any_teensy_port
+from device_utils import find_teensy
 from protocol import CommandPacket, create_button_led_packet
 
 # Removed duplicated CommandPacket class - now using centralized protocol
@@ -133,9 +135,22 @@ class TeensyAMonitor:
             print(f"[{current_time}] 🔧 Teensy Debug: {line}")
 
 def find_teensy_port():
-    """Try to automatically find Teensy port using centralized utility"""
-    port = find_any_teensy_port(verbose=True)
-    return port if port else '/dev/ttyACM0'  # Default fallback
+    """Try to find a Teensy port, preferring Teensy A"""
+    # Try Teensy A first (most likely for communication tests)
+    port = find_teensy("a", verbose=False)
+    if port:
+        print(f"Found Teensy A at {port}")
+        return port
+    
+    # Try Teensy B as fallback
+    port = find_teensy("b", verbose=False)
+    if port:
+        print(f"Found Teensy B at {port}")
+        return port
+    
+    # Last resort: default fallback
+    print("No known Teensy found, using default port")
+    return '/dev/ttyACM0'
 
 def main():
     print("Teensy A Communication Test")

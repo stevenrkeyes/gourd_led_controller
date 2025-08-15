@@ -14,6 +14,13 @@ TEENSY_B_SERIAL = "4278530"   # LED controller
 # Note: Old Teensy B serial number was "17656680" - kept for reference
 # TEENSY_B_SERIAL_OLD = "17656680"  # LED controller (old)
 
+# Teensy Mapping for convenient access
+TEENSY_MAPPING = {
+    "a": TEENSY_A_SERIAL,
+    "b": TEENSY_B_SERIAL,
+    # "c": "future_teensy_serial",  # Reserved for potential third Teensy
+}
+
 # Communication Protocol Constants
 # ===============================
 

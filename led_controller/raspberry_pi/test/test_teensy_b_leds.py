@@ -6,12 +6,6 @@ Sends LED pulse commands directly to Teensy B
 
 import serial
 import time
-import sys
-import os
-
-# Add parent directory to path when running directly
-if __name__ == "__main__":
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration and protocol
 from utils import find_teensy, create_led_pulse_packet
@@ -71,4 +65,4 @@ def test_teensy_b_leds():
         print("✅ Test complete!")
 
 if __name__ == "__main__":
-    test_teensy_b_leds() 
+    test_teensy_b_leds()

@@ -7,11 +7,10 @@ Provides multiple detection methods for different use cases
 import serial
 import serial.tools.list_ports
 from typing import Optional, Dict, List
-from config import (
+from .config import (
     TEENSY_A_SERIAL,
     TEENSY_B_SERIAL,
-    TEENSY_MAPPING,
-    TEENSY_USB_VID_PID
+    TEENSY_MAPPING
 )
 
 
@@ -67,8 +66,9 @@ def find_teensy(teensy_id: str, verbose: bool = True) -> Optional[str]:
             print(f"❌ Unknown Teensy ID: '{teensy_id}'")
             print(f"💡 Available Teensy IDs: {list(TEENSY_MAPPING.keys())}")
         return None
-    
+
     serial_number = TEENSY_MAPPING[teensy_id]
+    print(f"🔍 Looking for Teensy {teensy_id.upper()}...")
     port = find_teensy_by_serial(serial_number, verbose)
     
     if not port and verbose:
@@ -104,11 +104,6 @@ def detect_all_teensys(verbose: bool = True) -> Dict[str, str]:
             ports[f'teensy_{teensy_id}'] = port
     
     return ports
-
-
-
-
-
 
 
 def get_all_serial_ports() -> List[Dict[str, str]]:

@@ -8,9 +8,7 @@ import serial
 import time
 
 # Import centralized configuration and utilities
-from config import TEENSY_B_SERIAL, CMD_LED_PULSE
-from device_utils import find_teensy
-from protocol import create_led_pulse_packet
+from utils import find_teensy, create_led_pulse_packet
 
 def main():
     # Connect to Teensy B using elegant ID-based approach

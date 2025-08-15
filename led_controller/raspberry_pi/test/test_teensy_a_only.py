@@ -8,8 +8,7 @@ import serial
 import time
 
 # Import centralized configuration and device utilities
-from config import TEENSY_A_SERIAL
-from device_utils import find_teensy, print_available_ports
+from utils import find_teensy, print_available_ports
 
 def test_teensy_a_buttons():
     """Test up to 16 buttons on Teensy A with detailed tracking"""

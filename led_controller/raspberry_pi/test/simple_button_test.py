@@ -8,8 +8,7 @@ import serial
 import time
 
 # Import centralized configuration and device utilities
-from config import TEENSY_A_SERIAL
-from device_utils import find_teensy
+from utils import find_teensy
 
 def main():
     print("🔍 Looking for Teensy A...")

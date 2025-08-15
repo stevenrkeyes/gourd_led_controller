@@ -7,7 +7,7 @@ communication between Raspberry Pi and Teensy devices.
 """
 
 import struct
-from config import (
+from .config import (
     CMD_LED_PULSE,
     CMD_LED_EFFECT,
     CMD_BUTTON_PRESS,

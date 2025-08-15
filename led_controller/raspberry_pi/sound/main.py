@@ -7,8 +7,7 @@ import time
 import random
 from typing import Callable
 
-from dual_teensy import DualTeensyTester
-from config import TEENSY_A_SERIAL
+from utils import DualTeensyTester
 class Inputs:
     def listen(self):
         raise NotImplementedError

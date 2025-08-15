@@ -11,15 +11,15 @@ import time
 import threading
 from typing import Optional, Callable
 
-from config import (
+from .config import (
     TEENSY_A_SERIAL,
     TEENSY_B_SERIAL,
     CMD_LED_PULSE,
     CMD_BUTTON_PRESS,
     DEFAULT_BAUDRATE
 )
-from device_utils import detect_all_teensys
-from protocol import CommandPacket, create_led_pulse_packet
+from .device_utils import detect_all_teensys
+from .protocol import CommandPacket, create_led_pulse_packet
 
 
 class DualTeensyTester:

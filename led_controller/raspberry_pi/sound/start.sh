@@ -53,6 +53,9 @@ fi
 echo "-------------------------------"
 echo "Starting Python script with JACK audio backend..."
 
+# Change to the raspberry_pi directory so imports work correctly
+cd /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi
+
 # Run the Python script using the virtual environment
-/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/.venv/bin/python /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/main.py
+.venv/bin/python sound/main.py
 

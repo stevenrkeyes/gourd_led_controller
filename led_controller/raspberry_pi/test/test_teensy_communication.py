@@ -11,7 +11,7 @@ import sys
 from typing import Optional
 
 # Import centralized configuration and utilities
-from config import (
+from utils import (
     TEENSY_A_SERIAL,
     TEENSY_B_SERIAL,
     CMD_LED_PULSE,
@@ -19,10 +19,11 @@ from config import (
     CMD_BUTTON_PRESS,
     CMD_BUTTON_LED,
     CMD_SENSOR_DATA,
-    CMD_HEARTBEAT
+    CMD_HEARTBEAT,
+    find_teensy,
+    CommandPacket,
+    create_button_led_packet
 )
-from device_utils import find_teensy
-from protocol import CommandPacket, create_button_led_packet
 
 # Removed duplicated CommandPacket class - now using centralized protocol
 

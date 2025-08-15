@@ -7,17 +7,7 @@ Uses centralized DualTeensyTester for simplified and consistent testing
 import time
 
 # Import centralized configuration and utilities
-from config import (
-    TEENSY_A_SERIAL,
-    TEENSY_B_SERIAL,
-    CMD_LED_PULSE,
-    CMD_LED_EFFECT,
-    CMD_BUTTON_PRESS,
-    CMD_BUTTON_LED,
-    CMD_SENSOR_DATA,
-    CMD_HEARTBEAT
-)
-from dual_teensy import DualTeensyTester
+from utils import DualTeensyTester
 
 def test_communication():
     """Test the complete communication flow using centralized DualTeensyTester"""

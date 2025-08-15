@@ -9,9 +9,7 @@ import serial
 import time
 
 # Import centralized configuration and utilities
-from config import TEENSY_B_SERIAL, CMD_LED_PULSE, LED_STRIP_PIN_MAPPING
-from device_utils import find_teensy, print_available_ports
-from protocol import create_led_pulse_packet
+from utils import LED_STRIP_PIN_MAPPING, find_teensy, print_available_ports, create_led_pulse_packet
 
 # Pin mapping for reference (now imported from config)
 PIN_MAPPING = LED_STRIP_PIN_MAPPING

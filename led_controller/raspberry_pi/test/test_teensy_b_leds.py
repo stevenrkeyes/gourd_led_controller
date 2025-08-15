@@ -6,45 +6,21 @@ Sends LED pulse commands directly to Teensy B
 
 import serial
 import time
-import struct
 
-# Import centralized configuration
-from config import CMD_LED_PULSE
-
-class CommandPacket:
-    """Binary command packet for Teensy B"""
-    def __init__(self, command=0, data_length=0, data=None, checksum=0):
-        self.command = command
-        self.data_length = data_length
-        self.data = data if data is not None else [0] * 32
-        self.checksum = checksum
-    
-    def calculate_checksum(self):
-        """Calculate XOR checksum"""
-        checksum = 0
-        checksum ^= self.command
-        checksum ^= self.data_length
-        for i in range(self.data_length):
-            checksum ^= self.data[i]
-        return checksum
-    
-    def to_bytes(self):
-        """Convert packet to bytes for transmission"""
-        self.checksum = self.calculate_checksum()
-        packet_bytes = struct.pack('BB32sB', 
-                                 self.command, 
-                                 self.data_length, 
-                                 bytes(self.data), 
-                                 self.checksum)
-        return packet_bytes
+# Import centralized configuration and protocol
+from utils import find_teensy, create_led_pulse_packet
 
 def test_teensy_b_leds():
     """Test LED strips on Teensy B"""
     
-    # Connect to Teensy B
+    # Find and connect to Teensy B using standardized approach
+    teensy_port = find_teensy("b")
+    if not teensy_port:
+        return
+    
     try:
-        teensy_b = serial.Serial('/dev/ttyACM1', 9600, timeout=0.1)
-        print(f"✅ Connected to Teensy B on /dev/ttyACM1")
+        teensy_b = serial.Serial(teensy_port, 9600, timeout=0.1)
+        print(f"✅ Connected to Teensy B on {teensy_port}")
     except Exception as e:
         print(f"❌ Failed to connect to Teensy B: {e}")
         return
@@ -61,8 +37,8 @@ def test_teensy_b_leds():
         for strip_id in range(8):
             print(f"📤 Testing strip {strip_id}...")
             
-            # Create LED pulse command
-            packet = CommandPacket(CMD_LED_PULSE, 1, [strip_id])
+            # Create LED pulse command using standardized function
+            packet = create_led_pulse_packet(strip_id)
             packet_bytes = packet.to_bytes()
             
             # Send command

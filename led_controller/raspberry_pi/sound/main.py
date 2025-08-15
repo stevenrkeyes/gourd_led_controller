@@ -6,11 +6,8 @@ import threading
 import time
 import random
 from typing import Callable
-import serial
-import serial.tools.list_ports
-import time
 
-from communication.monitor_teensy import DualTeensyTester
+from dual_teensy import DualTeensyTester
 from config import TEENSY_A_SERIAL
 class Inputs:
     def listen(self):
@@ -331,20 +328,18 @@ inputs: Inputs = KeyboardInputs(
     }
 )
 
-# Teensy serial number imported from config
 
-def find_teensy_a():
-    """Find Teensy A by serial number"""
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        if port.serial_number == TEENSY_A_SERIAL:
-            return port.device
-    return None
 
 try:
-    # TODO: Rename these.
-    tester = DualTeensyTester(sound_callback=trigger)
-    tester.test_communication()
+    # Use centralized DualTeensyTester with sound callback
+    with DualTeensyTester(sound_callback=trigger) as tester:
+        if tester.start_monitoring():
+            print("🎵 Sound engine ready - listening for button presses...")
+            # Keep main thread alive
+            while True:
+                time.sleep(0.1)
+        else:
+            print("❌ Failed to start Teensy monitoring")
 
 except KeyboardInterrupt:
     print("\nStopping audio server...")

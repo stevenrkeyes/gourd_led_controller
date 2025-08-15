@@ -11,6 +11,7 @@ import serial.tools.list_ports
 import time
 
 from communication.monitor_teensy import DualTeensyTester
+from config import TEENSY_A_SERIAL
 class Inputs:
     def listen(self):
         raise NotImplementedError
@@ -330,7 +331,7 @@ inputs: Inputs = KeyboardInputs(
     }
 )
 
-TEENSY_A_SERIAL = "14094100"
+# Teensy serial number imported from config
 
 def find_teensy_a():
     """Find Teensy A by serial number"""

@@ -8,8 +8,8 @@ import serial
 import serial.tools.list_ports
 import time
 
-# Teensy A serial number
-TEENSY_A_SERIAL = "14094100"
+# Import centralized configuration
+from config import TEENSY_A_SERIAL
 
 def find_teensy_by_serial(target_serial):
     """Find Teensy device by its serial number"""

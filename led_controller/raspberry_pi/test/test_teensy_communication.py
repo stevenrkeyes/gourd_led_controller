@@ -11,13 +11,15 @@ import struct
 import sys
 from typing import Optional
 
-# Communication protocol constants (matching Teensy code)
-CMD_LED_PULSE = 0x01
-CMD_LED_EFFECT = 0x02
-CMD_BUTTON_PRESS = 0x10
-CMD_BUTTON_LED = 0x11
-CMD_SENSOR_DATA = 0x20
-CMD_HEARTBEAT = 0xFF
+# Import centralized configuration
+from config import (
+    CMD_LED_PULSE,
+    CMD_LED_EFFECT,
+    CMD_BUTTON_PRESS,
+    CMD_BUTTON_LED,
+    CMD_SENSOR_DATA,
+    CMD_HEARTBEAT
+)
 
 class CommandPacket:
     """Represents a command packet matching the Teensy structure"""

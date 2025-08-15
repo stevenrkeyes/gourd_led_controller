@@ -9,11 +9,8 @@ import serial.tools.list_ports
 import time
 import struct
 
-# Communication protocol constants
-CMD_LED_PULSE = 0x01
-
-# Teensy B serial number
-TEENSY_B_SERIAL = "4278530"
+# Import centralized configuration
+from config import TEENSY_B_SERIAL, CMD_LED_PULSE
 
 class CommandPacket:
     """Binary command packet for Teensy B"""

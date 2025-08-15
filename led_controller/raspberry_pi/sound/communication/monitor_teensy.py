@@ -13,18 +13,18 @@ import re
 import platformio as pio
 from typing import Optional, Dict
 
-# Communication protocol constants
-CMD_LED_PULSE = 0x01
-CMD_LED_EFFECT = 0x02
-CMD_BUTTON_PRESS = 0x10
-CMD_BUTTON_LED = 0x11
-CMD_SENSOR_DATA = 0x20
-CMD_HEARTBEAT = 0xFF
-
-# Known Teensy serial numbers
-TEENSY_A_SERIAL = "14094100"  # Button controller
-# TEENSY_B_SERIAL = "17656680"  # LED controller
-TEENSY_B_SERIAL = "4278530"  # LED controller
+# Import centralized configuration
+from config import (
+    TEENSY_A_SERIAL,
+    TEENSY_B_SERIAL,
+    CMD_LED_PULSE,
+    CMD_LED_EFFECT,
+    CMD_BUTTON_PRESS,
+    CMD_BUTTON_LED,
+    CMD_SENSOR_DATA,
+    CMD_HEARTBEAT,
+    PLATFORMIO_PATH
+)
 
 class CommandPacket:
     """Binary command packet for Teensy B"""
@@ -60,9 +60,8 @@ def detect_teensy_ports() -> Dict[str, str]:
     """
     try:
         # Run pio device list and parse output
-        # Use the full path to platformio in the virtual environment
-        # TODO: Clean this up.
-        pio_path = '/home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi/sound/.venv/bin/platformio'
+        # Use the configured path to platformio
+        pio_path = PLATFORMIO_PATH
         result = subprocess.run([pio_path, 'device', 'list'], 
                               capture_output=True, text=True, check=True)
         

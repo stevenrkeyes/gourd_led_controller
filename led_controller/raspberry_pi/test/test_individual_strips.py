@@ -10,23 +10,11 @@ import serial.tools.list_ports
 import time
 import struct
 
-# Communication protocol constants
-CMD_LED_PULSE = 0x01
+# Import centralized configuration
+from config import TEENSY_B_SERIAL, CMD_LED_PULSE, LED_STRIP_PIN_MAPPING
 
-# Teensy B serial number
-TEENSY_B_SERIAL = "4278530"
-
-# Pin mapping for reference
-PIN_MAPPING = {
-    0: 2,
-    1: 14,
-    2: 7,
-    3: 8,
-    4: 6,
-    5: 20,
-    6: 21,
-    7: 5
-}
+# Pin mapping for reference (now imported from config)
+PIN_MAPPING = LED_STRIP_PIN_MAPPING
 
 class CommandPacket:
     """Binary command packet for Teensy B"""

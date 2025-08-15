@@ -21,7 +21,6 @@
 
 // Teensy-specific configurations
 #ifdef TEENSY_A
-  #define HAS_SENSORS
 #endif
 
 #ifdef TEENSY_B

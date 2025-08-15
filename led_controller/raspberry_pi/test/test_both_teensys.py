@@ -12,18 +12,17 @@ import subprocess
 import re
 from typing import Optional, Dict
 
-# Communication protocol constants
-CMD_LED_PULSE = 0x01
-CMD_LED_EFFECT = 0x02
-CMD_BUTTON_PRESS = 0x10
-CMD_BUTTON_LED = 0x11
-CMD_SENSOR_DATA = 0x20
-CMD_HEARTBEAT = 0xFF
-
-# Known Teensy serial numbers
-TEENSY_A_SERIAL = "14094100"  # Button controller
-# TEENSY_B_SERIAL = "17656680"  # LED controller
-TEENSY_B_SERIAL = "4278530"  # LED controller
+# Import centralized configuration
+from config import (
+    TEENSY_A_SERIAL,
+    TEENSY_B_SERIAL,
+    CMD_LED_PULSE,
+    CMD_LED_EFFECT,
+    CMD_BUTTON_PRESS,
+    CMD_BUTTON_LED,
+    CMD_SENSOR_DATA,
+    CMD_HEARTBEAT
+)
 
 class CommandPacket:
     """Binary command packet for Teensy B"""

@@ -13,7 +13,6 @@ from utils import find_teensy, print_available_ports
 def test_teensy_a_buttons():
     """Test up to 16 buttons on Teensy A with detailed tracking"""
     
-    # Find Teensy A using elegant ID-based approach
     teensy_port = find_teensy("a")
     if not teensy_port:
         print_available_ports()

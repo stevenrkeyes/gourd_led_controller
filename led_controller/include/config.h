@@ -19,23 +19,15 @@
 #define LED_CHIPSET WS2811
 #define LED_COLOR_ORDER WGRB
 
-// Teensy-specific capabilities
+// Teensy-specific configurations
 #ifdef TEENSY_A
-  #define HAS_BUTTONS
-  #define HAS_BUTTON_LEDS
-  #define HAS_SENSORS
 #endif
 
 #ifdef TEENSY_B
-  #ifndef TEST_MODE
-  #define HAS_OCTO_LED_STRIPS
   #define NUM_LED_STRIPS 8
-  #endif
-  // In TEST_MODE, no LED functionality - just communication testing
 #endif
 
 #ifdef TEENSY_C
-  #define HAS_OCTO_LED_STRIPS
   #define NUM_LED_STRIPS 8
 #endif
 

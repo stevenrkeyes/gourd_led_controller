@@ -6,84 +6,23 @@ Tests each strip one by one with clear feedback
 """
 
 import serial
-import serial.tools.list_ports
 import time
-import struct
 
-# Communication protocol constants
-CMD_LED_PULSE = 0x01
+# Import centralized configuration and utilities
+from utils import LED_STRIP_PIN_MAPPING, find_teensy, print_available_ports, create_led_pulse_packet
 
-# Teensy B serial number
-TEENSY_B_SERIAL = "4278530"
+# Pin mapping for reference (now imported from config)
+PIN_MAPPING = LED_STRIP_PIN_MAPPING
 
-# Pin mapping for reference
-PIN_MAPPING = {
-    0: 2,
-    1: 14,
-    2: 7,
-    3: 8,
-    4: 6,
-    5: 20,
-    6: 21,
-    7: 5
-}
-
-class CommandPacket:
-    """Binary command packet for Teensy B"""
-    def __init__(self, command=0, data_length=0, data=None, checksum=0):
-        self.command = command
-        self.data_length = data_length
-        self.data = data if data is not None else [0] * 32
-        self.checksum = checksum
-    
-    def calculate_checksum(self):
-        """Calculate XOR checksum"""
-        checksum = 0
-        checksum ^= self.command
-        checksum ^= self.data_length
-        for i in range(self.data_length):
-            checksum ^= self.data[i]
-        return checksum
-    
-    def to_bytes(self):
-        """Convert packet to bytes for transmission"""
-        self.checksum = self.calculate_checksum()
-        packet_bytes = struct.pack('BB32sB', 
-                                 self.command, 
-                                 self.data_length, 
-                                 bytes(self.data), 
-                                 self.checksum)
-        return packet_bytes
-
-def find_teensy_by_serial(target_serial):
-    """Find Teensy device by its serial number"""
-    print(f"🔍 Searching for Teensy with serial number: {target_serial}")
-    
-    ports = serial.tools.list_ports.comports()
-    
-    for port in ports:
-        print(f"   Checking {port.device}: {port.description}")
-        if port.serial_number == target_serial:
-            print(f"   ✅ Found Teensy B at {port.device}")
-            return port.device
-        if port.serial_number:
-            print(f"      Serial: {port.serial_number}")
-    
-    return None
 
 def test_individual_strips():
     """Test each LED strip individually for wiring diagnosis"""
     
     # Connect to Teensy B
     try:
-        # Find Teensy B by serial number
-        teensy_port = find_teensy_by_serial(TEENSY_B_SERIAL)
+        teensy_port = find_teensy("b")
         if not teensy_port:
-            print(f"❌ Could not find Teensy B with serial number {TEENSY_B_SERIAL}")
-            print("Available devices:")
-            ports = serial.tools.list_ports.comports()
-            for port in ports:
-                print(f"  {port.device}: {port.description} (Serial: {port.serial_number})")
+            print_available_ports()
             return
         
         teensy_b = serial.Serial(teensy_port, 9600, timeout=0.1)
@@ -119,8 +58,8 @@ def test_individual_strips():
             print(f"\n🧪 Testing Strip {strip_id} (Pin {PIN_MAPPING[strip_id]})...")
             print(f"   Look for a bright WHITE pulse traveling down strip {strip_id}")
             
-            # Create LED pulse command
-            packet = CommandPacket(CMD_LED_PULSE, 1, [strip_id])
+            # Create LED pulse command using centralized protocol
+            packet = create_led_pulse_packet(strip_id)
             packet_bytes = packet.to_bytes()
             
             # Send command

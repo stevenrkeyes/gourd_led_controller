@@ -1,14 +1,12 @@
 #include "button_leds.h"
 #include "config.h"
 
-#ifdef HAS_BUTTON_LEDS
+#ifdef TEENSY_A
 
 #include <FastLED.h>
 #include "shared/communication.h"
 
-#ifdef TEENSY_A
 #include "pins_teensy_a.h"
-#endif
 
 // Array to hold button LED colors
 CRGB buttonLeds[4];
@@ -49,4 +47,4 @@ void setButtonLed(int buttonId, uint8_t r, uint8_t g, uint8_t b) {
     Serial.println(")");
 }
 
-#endif // HAS_BUTTON_LEDS 
+#endif // TEENSY_A 

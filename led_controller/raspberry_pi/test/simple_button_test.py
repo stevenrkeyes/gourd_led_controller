@@ -5,30 +5,15 @@ Just prints when buttons are pressed
 """
 
 import serial
-import serial.tools.list_ports
 import time
 
-# Teensy A serial number
-TEENSY_A_SERIAL = "14094100"
-
-def find_teensy_a():
-    """Find Teensy A by serial number"""
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        if port.serial_number == TEENSY_A_SERIAL:
-            return port.device
-    return None
+# Import centralized configuration and device utilities
+from utils import find_teensy
 
 def main():
-    print("🔍 Looking for Teensy A...")
-    
-    # Find Teensy A
-    port = find_teensy_a()
+    port = find_teensy("a")
     if not port:
-        print("❌ Teensy A not found!")
         return
-    
-    print(f"✅ Found Teensy A on {port}")
     
     try:
         # Connect
@@ -58,4 +43,4 @@ def main():
         print("✅ Done!")
 
 if __name__ == "__main__":
-    main() 
+    main()

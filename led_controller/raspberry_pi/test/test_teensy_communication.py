@@ -7,55 +7,25 @@ This script reads serial data from Teensy A and displays button presses and sens
 
 import serial
 import time
-import struct
 import sys
 from typing import Optional
 
-# Communication protocol constants (matching Teensy code)
-CMD_LED_PULSE = 0x01
-CMD_LED_EFFECT = 0x02
-CMD_BUTTON_PRESS = 0x10
-CMD_BUTTON_LED = 0x11
-CMD_SENSOR_DATA = 0x20
-CMD_HEARTBEAT = 0xFF
+# Import centralized configuration and utilities
+from utils import (
+    TEENSY_A_SERIAL,
+    TEENSY_B_SERIAL,
+    CMD_LED_PULSE,
+    CMD_LED_EFFECT,
+    CMD_BUTTON_PRESS,
+    CMD_BUTTON_LED,
+    CMD_SENSOR_DATA,
+    CMD_HEARTBEAT,
+    find_teensy,
+    CommandPacket,
+    create_button_led_packet
+)
 
-class CommandPacket:
-    """Represents a command packet matching the Teensy structure"""
-    def __init__(self, command=0, data_length=0, data=None, checksum=0):
-        self.command = command
-        self.data_length = data_length
-        self.data = data if data is not None else [0] * 32
-        self.checksum = checksum
-    
-    def calculate_checksum(self):
-        """Calculate XOR checksum"""
-        checksum = 0
-        checksum ^= self.command
-        checksum ^= self.data_length
-        for i in range(self.data_length):
-            checksum ^= self.data[i]
-        return checksum
-    
-    @classmethod
-    def from_bytes(cls, data_bytes):
-        """Create packet from received bytes"""
-        if len(data_bytes) < 35:  # command(1) + length(1) + data(32) + checksum(1)
-            return None
-        
-        command = data_bytes[0]
-        data_length = data_bytes[1]
-        data = list(data_bytes[2:34])
-        checksum = data_bytes[34]
-        
-        packet = cls(command, data_length, data, checksum)
-        
-        # Verify checksum
-        expected_checksum = packet.calculate_checksum()
-        if checksum != expected_checksum:
-            print(f"Checksum mismatch! Expected: {expected_checksum}, Got: {checksum}")
-            return None
-        
-        return packet
+# Removed duplicated CommandPacket class - now using centralized protocol
 
 class TeensyAMonitor:
     def __init__(self, port='/dev/ttyACM0', baudrate=9600):
@@ -87,19 +57,9 @@ class TeensyAMonitor:
             print("Not connected to Teensy A")
             return
         
-        packet = CommandPacket(
-            command=CMD_BUTTON_LED,
-            data_length=5,
-            data=[button_id, brightness, r, g, b] + [0] * 27
-        )
-        packet.checksum = packet.calculate_checksum()
-        
-        # Pack and send
-        packet_bytes = struct.pack('BB32sB', 
-                                 packet.command, 
-                                 packet.data_length, 
-                                 bytes(packet.data), 
-                                 packet.checksum)
+        # Use centralized protocol function
+        packet = create_button_led_packet(button_id, r, g, b)
+        packet_bytes = packet.to_bytes()
         
         self.ser.write(packet_bytes)
         print(f"Sent button LED command: Button {button_id} -> RGB({r},{g},{b})")
@@ -176,16 +136,22 @@ class TeensyAMonitor:
             print(f"[{current_time}] 🔧 Teensy Debug: {line}")
 
 def find_teensy_port():
-    """Try to automatically find Teensy port"""
-    import serial.tools.list_ports
+    """Try to find a Teensy port, preferring Teensy A"""
+    # Try Teensy A first (most likely for communication tests)
+    port = find_teensy("a", verbose=False)
+    if port:
+        print(f"Found Teensy A at {port}")
+        return port
     
-    ports = serial.tools.list_ports.comports()
-    for port in ports:
-        if 'USB' in port.description or 'ACM' in port.device or 'tty' in port.device:
-            print(f"Found potential Teensy port: {port.device} - {port.description}")
-            return port.device
+    # Try Teensy B as fallback
+    port = find_teensy("b", verbose=False)
+    if port:
+        print(f"Found Teensy B at {port}")
+        return port
     
-    return '/dev/ttyACM0'  # Default
+    # Last resort: default fallback
+    print("No known Teensy found, using default port")
+    return '/dev/ttyACM0'
 
 def main():
     print("Teensy A Communication Test")

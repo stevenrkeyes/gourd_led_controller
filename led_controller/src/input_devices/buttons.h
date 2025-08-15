@@ -1,7 +1,7 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-#ifdef HAS_BUTTONS
+#ifdef TEENSY_A
 
 #include <Arduino.h>
 
@@ -14,6 +14,6 @@ const std::vector<int> COL_PINS {0, 1};
 void setupButtons();
 void loopButtons();
 
-#endif // HAS_BUTTONS
+#endif // TEENSY_A
 
 #endif // BUTTONS_H 

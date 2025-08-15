@@ -1,7 +1,7 @@
 #include "effects.h"
 #include "config.h"
 
-#ifdef HAS_OCTO_LED_STRIPS
+#if defined(TEENSY_B) || defined(TEENSY_C)
 
 #include "shared/communication.h"
 
@@ -33,4 +33,4 @@ void stopAllEffects() {
     // Implementation would go here
 }
 
-#endif // HAS_OCTO_LED_STRIPS 
+#endif // TEENSY_B || TEENSY_C 

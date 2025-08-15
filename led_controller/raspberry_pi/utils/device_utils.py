@@ -35,7 +35,13 @@ def find_teensy_by_serial(target_serial: str, verbose: bool = True) -> Optional[
             print(f"   Checking {port.device}: {port.description}")
         
         if port.serial_number == target_serial:
-            device_name = "Teensy A" if target_serial == TEENSY_A_SERIAL else "Teensy B"
+            # Find device name using TEENSY_MAPPING
+            device_name = "Unknown Teensy"
+            for teensy_id, serial_num in TEENSY_MAPPING.items():
+                if serial_num == target_serial:
+                    device_name = f"Teensy {teensy_id.upper()}"
+                    break
+            
             if verbose:
                 print(f"   ✅ Found {device_name} at {port.device}")
             return port.device

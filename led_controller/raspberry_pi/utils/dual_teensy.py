@@ -15,7 +15,8 @@ from .config import (
     TEENSY_A_SERIAL,
     TEENSY_B_SERIAL,
     TEENSY_C_SERIAL,
-    DEFAULT_BAUDRATE
+    DEFAULT_BAUDRATE,
+    NUM_STRIPS_PER_TEENSY,
 )
 from .device_utils import detect_all_teensys
 from .protocol import CommandPacket, create_led_pulse_packet
@@ -91,7 +92,7 @@ class DualTeensyTester:
             
         return True
     
-    def send_led_command_to_receiver_teensies(self, strip_id=0):
+    def send_led_pulse_command(self, strip_id=0):
         """Send LED pulse command to Teensy B and C"""
         if not self.teensy_b or not self.teensy_c:
             if not self.teensy_b:
@@ -101,14 +102,19 @@ class DualTeensyTester:
             return
 
         print("Teensy B and C apparently connected...")
+
+        # TODO: Refactor this logic into a more broad "send_led_command" function? 
+        # That function would then be called within more specific "send_led_effect_command" or "send_led_pulse_command" functions.
+        if strip_id < NUM_STRIPS_PER_TEENSY:
+            teensy_to_write_to = self.teensy_b
+        else:
+            teensy_to_write_to = self.teensy_c
             
-        packet = create_led_pulse_packet(strip_id)
+        packet = create_led_pulse_packet(strip_id % NUM_STRIPS_PER_TEENSY)
         packet_bytes = packet.to_bytes()
         
         try:
-            # TODO: We should only write to teensy c if strip_id >= 8.
-            self.teensy_b.write(packet_bytes)
-            self.teensy_c.write(packet_bytes)
+            teensy_to_write_to.write(packet_bytes)
             print(f"📤 Sent LED pulse command to Teensy B (strip {strip_id})")
         except Exception as e:
             print(f"❌ Error sending to Teensy B: {e}")
@@ -130,7 +136,7 @@ class DualTeensyTester:
                             
                             # Forward as LED command to Teensy B
                             strip_id = button_id - 1  # Convert to 0-based
-                            self.send_led_command_to_receiver_teensies(strip_id)
+                            self.send_led_pulse_command(strip_id)
                             
                             # Trigger sound callback if provided
                             if self.sound_callback:
@@ -164,7 +170,7 @@ class DualTeensyTester:
                     line = self.teensy_c.readline().decode('utf-8').strip()
                     if line:
                         current_time = time.strftime("%H:%M:%S")
-                        print(f"[{current_time}] 🅱️  Teensy C: {line}")
+                        print(f"[{current_time}] 🅲 Teensy C: {line}")
                 except Exception as e:
                     print(f"❌ Error reading Teensy C: {e}")
             

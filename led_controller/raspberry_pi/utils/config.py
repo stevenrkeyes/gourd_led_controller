@@ -41,6 +41,7 @@ SERIAL_TIMEOUT = 1.0
 
 # LED Strip Configuration
 # ======================
+NUM_STRIPS_PER_TEENSY = 8
 
 # Pin mapping for LED strips on Teensy B
 # Maps strip index to physical pin number

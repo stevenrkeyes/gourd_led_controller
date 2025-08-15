@@ -43,8 +43,8 @@ def test_teensy_b_leds():
     
     # Connect to Teensy B
     try:
-        teensy_b = serial.Serial('/dev/ttyACM0', 9600, timeout=0.1)
-        print(f"✅ Connected to Teensy B on /dev/ttyACM0")
+        teensy_b = serial.Serial('/dev/ttyACM1', 9600, timeout=0.1)
+        print(f"✅ Connected to Teensy B on /dev/ttyACM1")
     except Exception as e:
         print(f"❌ Failed to connect to Teensy B: {e}")
         return

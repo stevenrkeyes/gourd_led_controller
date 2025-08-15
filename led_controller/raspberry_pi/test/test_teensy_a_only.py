@@ -6,6 +6,12 @@ Identifies Teensy A by serial number and provides detailed button testing
 
 import serial
 import time
+import sys
+import os
+
+# Add parent directory to path when running directly
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration and device utilities
 from utils import find_teensy, print_available_ports

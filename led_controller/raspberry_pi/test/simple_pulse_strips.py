@@ -6,12 +6,17 @@ Just pulses each strip 0-7 in sequence, no user input required
 
 import serial
 import time
+import sys
+import os
+
+# Add parent directory to path when running directly
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration and utilities
 from utils import find_teensy, create_led_pulse_packet
 
 def main():
-    # Connect to Teensy B using elegant ID-based approach
     teensy_port = find_teensy("b")
     if not teensy_port:
         return

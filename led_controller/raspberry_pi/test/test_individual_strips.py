@@ -7,6 +7,12 @@ Tests each strip one by one with clear feedback
 
 import serial
 import time
+import sys
+import os
+
+# Add parent directory to path when running directly
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration and utilities
 from utils import LED_STRIP_PIN_MAPPING, find_teensy, print_available_ports, create_led_pulse_packet
@@ -20,7 +26,6 @@ def test_individual_strips():
     
     # Connect to Teensy B
     try:
-        # Find Teensy B using elegant ID-based approach
         teensy_port = find_teensy("b")
         if not teensy_port:
             print_available_ports()

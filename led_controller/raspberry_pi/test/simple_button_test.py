@@ -6,19 +6,20 @@ Just prints when buttons are pressed
 
 import serial
 import time
+import sys
+import os
+
+# Add parent directory to path when running directly
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration and device utilities
 from utils import find_teensy
 
 def main():
-    print("🔍 Looking for Teensy A...")
-    
-    # Find Teensy A using elegant ID-based approach
     port = find_teensy("a")
     if not port:
         return
-    
-    print(f"✅ Found Teensy A on {port}")
     
     try:
         # Connect

@@ -34,9 +34,16 @@ bool receiveCommand(CommandPacket& packet) {
             return true;
         } else {
             Serial.println("Checksum error");
-            Serial.println(packet.command);
-            Serial.println(packet.data);
-            Serial.println(packet.data_length);
+            Serial.print("Command: ");
+            Serial.println((int)packet.command);
+            Serial.print("Data length: ");
+            Serial.println((int)packet.data_length);
+            Serial.print("Data: ");
+            for (int i = 0; i < packet.data_length && i < 32; i++) {
+                Serial.print((int)packet.data[i]);
+                if (i < packet.data_length - 1) Serial.print(", ");
+            }
+            Serial.println();
             return false;
         }
     }

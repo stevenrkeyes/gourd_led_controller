@@ -6,17 +6,20 @@ Just pulses each strip 0-7 in sequence, no user input required
 
 import serial
 import time
+import sys
 
 # Import centralized configuration and utilities
 from utils import find_teensy, create_led_pulse_packet
 
 def main():
-    teensy_port = find_teensy("b")
+    teensy_port = find_teensy("c")
     if not teensy_port:
         return
+
+    print(f"Args received: {sys.argv}")
     
     teensy = serial.Serial(teensy_port, 9600, timeout=0.1)
-    print(f"✅ Connected to Teensy B")
+    print(f"✅ Connected to Teensy C")
     
     # Wait for startup and clear buffer
     time.sleep(3)

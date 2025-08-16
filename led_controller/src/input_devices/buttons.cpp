@@ -7,7 +7,6 @@
 #include "shared/communication.h"
 #include "pins_teensy_a.h"
 #include "teensy_a/eyes.h"
-#endif
 
 // Array of Bounce objects for all buttons (dynamically initialized)
 Bounce buttons[NUM_BUTTONS];

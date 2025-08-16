@@ -10,6 +10,7 @@ Contains hardware configuration, serial numbers, and communication constants
 # Teensy Serial Numbers
 TEENSY_A_SERIAL = "14094100"  # Button controller
 TEENSY_B_SERIAL = "4278530"   # LED controller
+TEENSY_C_SERIAL = "17985960"
 
 # Note: Old Teensy B serial number was "17656680" - kept for reference
 # TEENSY_B_SERIAL_OLD = "17656680"  # LED controller (old)
@@ -18,7 +19,7 @@ TEENSY_B_SERIAL = "4278530"   # LED controller
 TEENSY_MAPPING = {
     "a": TEENSY_A_SERIAL,
     "b": TEENSY_B_SERIAL,
-    # "c": "future_teensy_serial",  # Reserved for potential third Teensy
+    "c": TEENSY_C_SERIAL,
 }
 
 # Communication Protocol Constants
@@ -40,6 +41,7 @@ SERIAL_TIMEOUT = 1.0
 
 # LED Strip Configuration
 # ======================
+NUM_STRIPS_PER_TEENSY = 8
 
 # Pin mapping for LED strips on Teensy B
 # Maps strip index to physical pin number

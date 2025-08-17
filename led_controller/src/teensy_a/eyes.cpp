@@ -102,7 +102,8 @@ void loopEyes() {
         max_intensity = max_intensity * eye_brightness_multipliers[i];
         intensity = MIN_INTENSITY + (max_intensity - MIN_INTENSITY) * intensity; // min to max
     
-        CRGB base_color = eye_states[i] ? CRGB::White : CRGB::Red;
+        // CRGB base_color = eye_states[i] ? CRGB::White : CRGB::Red;
+        CRGB base_color = i % 2 == 0 ? CRGB::White : CRGB::Red;
         CRGB color = base_color;
         
         // Apply breathing effect by scaling the color intensity

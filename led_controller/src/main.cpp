@@ -7,7 +7,6 @@
   #include "pins_teensy_a.h"
   #include "teensy_a/teensy_a_specific.h"
   #include "input_devices/buttons.h"
-  #include "input_devices/button_leds.h"
 #endif
 
 #ifdef TEENSY_B
@@ -45,7 +44,6 @@ void setup() {
   // Initialize device-specific components
 #ifdef TEENSY_A
   setupButtons();
-  setupButtonLeds();
 #endif
 
 #ifdef TEENSY_B
@@ -83,7 +81,6 @@ void loop() {
   // Run device-specific loops
 #ifdef TEENSY_A
   loopButtons();
-  loopButtonLeds();
 #endif
 
 #ifdef TEENSY_B

@@ -19,7 +19,7 @@ from .config import (
     NUM_STRIPS_PER_TEENSY,
 )
 from .device_utils import detect_all_teensys
-from .protocol import CommandPacket, create_led_pulse_packet
+from .protocol import CommandPacket, create_led_pulse_packet, create_led_effect_packet
 
 
 class DualTeensyTester:
@@ -43,9 +43,9 @@ class DualTeensyTester:
         self.teensy_c = None
         self.running = False
         self.sound_callback = sound_callback
-        
+    
     def connect(self):
-        """Connect to both Teensys using auto-detection"""
+        """Connect to all Teensys using auto-detection"""
         print("🔍 Auto-detecting Teensy devices...")
         ports = detect_all_teensys()
         
@@ -63,6 +63,7 @@ class DualTeensyTester:
         self.teensy_b_port = ports['teensy_b']
         self.teensy_c_port = ports['teensy_c']
         
+        # TODO: Make this less fragile - if teensy B or C are not found, we should still send sound signals from Teensy A.
         try:
             self.teensy_a = serial.Serial(self.teensy_a_port, self.baudrate, timeout=0.1)
             print(f"✅ Connected to Teensy A on {self.teensy_a_port}")
@@ -91,35 +92,55 @@ class DualTeensyTester:
             return False
             
         return True
-    
-    def send_led_pulse_command(self, strip_id=0):
-        """Send LED pulse command to Teensy B and C"""
-        if not self.teensy_b or not self.teensy_c:
-            if not self.teensy_b:
-                print("❌ Teensy B not connected")
-            if not self.teensy_c:
-                print("❌ Teensy C not connected")
-            return
 
-        print("Teensy B and C apparently connected...")
-
-        # TODO: Refactor this logic into a more broad "send_led_command" function? 
-        # That function would then be called within more specific "send_led_effect_command" or "send_led_pulse_command" functions.
+    def get_teensy_and_name_for_strip_id(self, strip_id):
         if strip_id < NUM_STRIPS_PER_TEENSY:
             teensy_to_write_to = self.teensy_b
+            teensy_name = "Teensy B"
         else:
             teensy_to_write_to = self.teensy_c
-            
-        packet = create_led_pulse_packet(strip_id % NUM_STRIPS_PER_TEENSY)
+            teensy_name = "Teensy C"
+        
+        # TODO: Is this check sufficient?
+        if not teensy_to_write_to:
+            print(f"❌ {teensy_name} not connected.")
+            return [None, None]
+        return [teensy_to_write_to, teensy_name]
+
+    
+    def send_led_pulse_command(self, strip_id):
+        """Send LED pulse command to Teensy B or C, depending on strip_id"""
+        teensy_to_write_to, teensy_name = self.get_teensy_and_name_for_strip_id(strip_id)
+        if not teensy_to_write_to or not teensy_name:
+            return
+
+        packet = create_led_pulse_packet(strip_id)
         packet_bytes = packet.to_bytes()
         
         try:
             teensy_to_write_to.write(packet_bytes)
-            print(f"📤 Sent LED pulse command to Teensy B (strip {strip_id})")
+            print(f"📤 Sent LED pulse command to {teensy_name} (strip {strip_id})")
         except Exception as e:
-            print(f"❌ Error sending to Teensy B: {e}")
+            print(f"❌ Error sending to {teensy_name}: {e}")
+
+    # Unused for now. 
+    # TODO: Could dedupe some code between this and send_led_pulse_command via functools.partial but keeping it simple.
+    def send_led_effect_command(self, strip_id, effect_type, params):
+        """Send LED effect command to Teensy B or C, depending on strip_id"""
+        teensy_to_write_to, teensy_name = self.get_teensy_and_name_for_strip_id(strip_id)
+        if not teensy_to_write_to or not teensy_name:
+            return
+
+        packet = create_led_effect_packet(strip_id=strip_id, effect_type=effect_type, *params)
+        packet_bytes = packet.to_bytes()
+        
+        try:
+            teensy_to_write_to.write(packet_bytes)
+            print(f"📤 Sent LED effect command to {teensy_name} (strip {strip_id})")
+        except Exception as e:
+            print(f"❌ Error sending to {teensy_name}: {e}")
     
-    def monitor_teensy_a(self):
+    def monitor_teensy_a_and_send_commands(self):
         """Monitor Teensy A for button presses"""
         while self.running:
             if self.teensy_a and self.teensy_a.in_waiting > 0:
@@ -134,7 +155,7 @@ class DualTeensyTester:
                             button_id = int(line.split(":")[1])
                             print(f"[{current_time}] 🔘 Button {button_id} pressed!")
                             
-                            # Forward as LED command to Teensy B
+                            # Forward as LED command to the corresponding receiver Teensy.
                             strip_id = button_id - 1  # Convert to 0-based
                             self.send_led_pulse_command(strip_id)
                             
@@ -185,7 +206,7 @@ class DualTeensyTester:
         self.running = True
         
         # Start monitoring threads
-        self.thread_a = threading.Thread(target=self.monitor_teensy_a, daemon=True)
+        self.thread_a = threading.Thread(target=self.monitor_teensy_a_and_send_commands, daemon=True)
         self.thread_b = threading.Thread(target=self.monitor_teensy_b, daemon=True)
         self.thread_c = threading.Thread(target=self.monitor_teensy_c, daemon=True)
         

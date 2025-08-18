@@ -77,9 +77,9 @@ class CommandPacket:
         """String representation for debugging"""
         return f"CommandPacket(cmd=0x{self.command:02x}, len={self.data_length}, data={self.data[:self.data_length]})"
 
+# Safety function to make sure we are always sending strip indices with values [0-7].
+# Committing to this standard this on the raspberry pi allows us to avoid doing post-unpack checks on the Teensy side.
 def get_validated_strip_id(strip_id):
-    if strip_id >= NUM_STRIPS_PER_TEENSY:
-        print(f"Warning - tried to send to a strip_id that's too high ({strip_id})")
     return strip_id % NUM_STRIPS_PER_TEENSY
 
 # Convenience functions for creating common packets

@@ -139,6 +139,15 @@ class DualTeensyTester:
             print(f"📤 Sent LED effect command to {teensy_name} (strip {strip_id})")
         except Exception as e:
             print(f"❌ Error sending to {teensy_name}: {e}")
+
+    def handle_button_press(self, button_id):
+        # Forward as LED command to the corresponding receiver Teensy.
+        strip_id = button_id - 1  # Convert to 0-based
+        self.send_led_pulse_command(strip_id)
+        
+        # Trigger sound callback if provided
+        if self.sound_callback:
+            self.sound_callback(strip_id)
     
     def monitor_teensy_a_and_send_commands(self):
         """Monitor Teensy A for button presses"""
@@ -154,15 +163,7 @@ class DualTeensyTester:
                         if line.startswith("BUTTON_PRESS:"):
                             button_id = int(line.split(":")[1])
                             print(f"[{current_time}] 🔘 Button {button_id} pressed!")
-                            
-                            # Forward as LED command to the corresponding receiver Teensy.
-                            strip_id = button_id - 1  # Convert to 0-based
-                            self.send_led_pulse_command(strip_id)
-                            
-                            # Trigger sound callback if provided
-                            if self.sound_callback:
-                                self.sound_callback(strip_id)
-                        
+                            self.handle_button_press(button_id)
                 except Exception as e:
                     print(f"❌ Error reading Teensy A: {e}")
             

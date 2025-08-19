@@ -347,6 +347,10 @@ def main():
     # 6. --- Start the Engine ---
 
     def trigger(button_index):
+        if button_index == 15:
+            clip_player.play_random()
+            return
+
         voice = button_index // 2
         whale = voices[voice]
         if button_index % 2 == 1:

@@ -1,7 +1,9 @@
 #include "eyes.h"
 #include "pins_teensy_a.h"
 
-CRGB eyeLeds[NUM_EYES * EYE_NUM_LEDS];
+CRGB eyeLeds[NUM_EYES * EYE_MAX_LEDS];
+int eye_led_counts[NUM_EYES];
+int total_eye_leds = 0;
 // Tracks whether the button corresponding to each eye is pressed.
 std::vector<bool> eye_states;
 
@@ -31,25 +33,46 @@ static const unsigned long ripple_duration = 1000; // ms for ripple to travel fu
 static const uint32_t ripple_color = 0x00FFFFFF; // White
 static const uint32_t background_color = 0x00000000; // Off
 
+static int computeEyeOffset(int eye_index) {
+    int offset = 0;
+    for (int i = 0; i < eye_index; i++) {
+        offset += eye_led_counts[i];
+    }
+    return offset;
+}
+
 void setupEyes() {
-    FastLED.addLeds<WS2811, EYE_LEDS_PIN, GRB>(eyeLeds, NUM_EYES * EYE_NUM_LEDS);
+    // Initialize per-eye LED counts. Default to 12 for safety.
+    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
+        eye_led_counts[eye_index] = 12;
+    }
+    // The system has 16 eyes: first 8 have 12 LEDs, second 8 have 24 LEDs.
+    for (int eye_index = 8; eye_index < NUM_EYES; eye_index++) {
+        eye_led_counts[eye_index] = 24;
+    }
+
+    // Compute total LEDs
+    total_eye_leds = 0;
+    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) total_eye_leds += eye_led_counts[eye_index];
+
+    FastLED.addLeds<WS2811, EYE_LEDS_PIN, GRB>(eyeLeds, total_eye_leds);
     FastLED.clear();
     FastLED.show();
 
-    for (int i = 0; i < NUM_EYES; i++) {
+    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
         eye_states.push_back(false);
         eye_brightness_multipliers.push_back(1.0);
     }
     breathing_start = millis();
 }
 
+// Used externally; see buttons.cpp.
 void triggerRipple(unsigned long timestamp, int eye_index) {
-    // Find first inactive slot
-    for (int i = 0; i < MAX_ACTIVE_RIPPLES; i++) {
-        if (!active_ripples[i].active) {
-            active_ripples[i].startTime = timestamp;
-            active_ripples[i].eye_index = eye_index;
-            active_ripples[i].active = true;
+    for (int eye_index = 0; eye_index < MAX_ACTIVE_RIPPLES; eye_index++) {
+        if (!active_ripples[eye_index].active) {
+            active_ripples[eye_index].startTime = timestamp;
+            active_ripples[eye_index].eye_index = eye_index;
+            active_ripples[eye_index].active = true;
             Serial.print("Triggered pulse from eye ");
             Serial.println(eye_index);
             break;
@@ -67,14 +90,14 @@ void loopEyes() {
     unsigned long current_time = millis();
 
     // Reset eye brightness multipliers; they'll be updated as we process ripples.
-    for (int i = 0; i < NUM_EYES; i++) {
-        eye_brightness_multipliers[i] = 1.0;
+    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
+        eye_brightness_multipliers[eye_index] = 1.0;
     }
 
     // For each active ripple, multiply brightness for the affected eyes.
     // At each step the ripple travels, the multiplier decreases.
-    for (int i = 0; i < MAX_ACTIVE_RIPPLES; i++) {
-        auto ripple = active_ripples[i];
+    for (int eye_index = 0; eye_index < MAX_ACTIVE_RIPPLES; eye_index++) {
+        auto ripple = active_ripples[eye_index];
         if (ripple.active) {
             float progress = float(current_time - ripple.startTime) / ripple_duration;
             int ripple_travel_distance = int(progress * RIPPLE_MAX_TRAVEL_DISTANCE);
@@ -91,29 +114,25 @@ void loopEyes() {
         }
     }
     
-    // Set LED values for each eye based on whether it's on or not.
-    for (int i = 0; i < NUM_EYES; i++) {
-        // Breathing speeds up when button is pressed.
-        float breathing_period = eye_states[i] ? BREATHING_PERIOD / BREATHING_SPEEDUP : BREATHING_PERIOD;
+    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
+        int num_leds_for_eye = eye_led_counts[eye_index];
+
+        float breathing_period = eye_states[eye_index] ? BREATHING_PERIOD / BREATHING_SPEEDUP : BREATHING_PERIOD;
         float breathing_progress = float(current_time - breathing_start) / breathing_period;
         float sine_value = sin(breathing_progress * 2 * PI); // -1 to +1
         float intensity = (sine_value + 1.0) / 2.0; // 0.0 to 1.0
-        float max_intensity = eye_states[i] ? MAX_INTENSITY / INTENSITY_DECREASE : MAX_INTENSITY;
-        max_intensity = max_intensity * eye_brightness_multipliers[i];
-        intensity = MIN_INTENSITY + (max_intensity - MIN_INTENSITY) * intensity; // min to max
+        float max_intensity = eye_states[eye_index] ? MAX_INTENSITY / INTENSITY_DECREASE : MAX_INTENSITY;
+        max_intensity *= eye_brightness_multipliers[eye_index];
+        intensity = MIN_INTENSITY + (max_intensity - MIN_INTENSITY) * intensity;
     
-        // CRGB base_color = eye_states[i] ? CRGB::White : CRGB::Red;
-        CRGB base_color = i % 2 == 0 ? CRGB::White : CRGB::Red;
+        CRGB base_color = eye_states[eye_index] ? CRGB::White : CRGB::Red;
         CRGB color = base_color;
-        
-        // Apply breathing effect by scaling the color intensity
         color.r = uint8_t(color.r * intensity);
         color.g = uint8_t(color.g * intensity);
         color.b = uint8_t(color.b * intensity);
         
-        int eye_offset = i * EYE_NUM_LEDS;
-        for (int j = 0; j < EYE_NUM_LEDS; j++) {
-            eyeLeds[eye_offset + j] = color;
+        for (int led_index = 0; led_index < num_leds_for_eye; led_index++) {
+            eyeLeds[computeEyeOffset(eye_index) + led_index] = color;
         }
     }
     FastLED.show();

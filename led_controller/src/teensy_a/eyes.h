@@ -3,11 +3,12 @@
 
 #include <FastLED.h>
 
-// TODO: This is wrong - we actually have 8 eyes of size 12 and 8 of size 24.
 #define NUM_EYES 16
-#define EYE_NUM_LEDS 12
+#define EYE_MAX_LEDS 24
 
-extern CRGB eyeLeds[NUM_EYES * EYE_NUM_LEDS];
+extern CRGB eyeLeds[NUM_EYES * EYE_MAX_LEDS];
+extern int eye_led_counts[NUM_EYES];
+extern int total_eye_leds;
 
 void setEyeStatus(int eye_index, bool status);
 

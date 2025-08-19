@@ -13,7 +13,7 @@ from utils import find_teensy, create_led_pulse_packet
 
 def main():
     teensies = []
-    for teensy_id in ["b", "c"]:
+    for teensy_id in ["c"]:
         teensy_port = find_teensy(teensy_id)
         if not teensy_port:
             return

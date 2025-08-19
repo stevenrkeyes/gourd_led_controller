@@ -7,17 +7,21 @@
 #include <vector>
 
 struct LedPulse {
+    bool active;
     unsigned long startTime;
     int strip;
-    bool active;
 };
 
 class OctoWS2811;
 extern OctoWS2811 leds;
 
 void setupLedStrips();
+void triggerLedPulse(unsigned long timestamp, int strip);
+void clearAllLEDs();
+void drawFire();
+void updateFire();
+void drawAllPulses();
 void loopLedStrips();
-void triggerLedPulse(unsigned long timestamp, int strip = 0);
 
 #endif // TEENSY_B || TEENSY_C
 

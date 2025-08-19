@@ -38,4 +38,4 @@ echo "Starting Python script with JACK audio backend..."
 cd /home/gourd/gourd/gourd_led_controller/led_controller/raspberry_pi
 
 # Run the Python script as a module using the virtual environment
-.venv/bin/python -m sound.main
+# .venv/bin/python -m sound.main

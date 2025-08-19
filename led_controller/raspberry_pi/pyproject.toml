@@ -36,3 +36,6 @@ dependencies = [
     "uvicorn==0.34.3",
     "wsproto==1.2.0",
 ]
+
+[tool.uv.sources]
+pyo = { path = "pyo-1.0.6-cp311-cp311-linux_aarch64.whl" }

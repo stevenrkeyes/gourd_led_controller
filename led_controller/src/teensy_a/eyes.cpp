@@ -2,7 +2,7 @@
 #include "pins_teensy_a.h"
 
 CRGB eyeLeds[NUM_EYES * EYE_MAX_LEDS];
-int eye_led_counts[NUM_EYES];
+int eye_led_counts[NUM_EYES] = {12, 12, 12, 12, 12, 24, 24, 12, 24, 24, 24, 24, 12, 24, 24, 12};
 int total_eye_leds = 0;
 // Tracks whether the button corresponding to each eye is pressed.
 std::vector<bool> eye_states;
@@ -42,14 +42,15 @@ static int computeEyeOffset(int eye_index) {
 }
 
 void setupEyes() {
-    // Initialize per-eye LED counts. Default to 12 for safety.
-    for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
-        eye_led_counts[eye_index] = 12;
-    }
-    // The system has 16 eyes: first 8 have 12 LEDs, second 8 have 24 LEDs.
-    for (int eye_index = 8; eye_index < NUM_EYES; eye_index++) {
-        eye_led_counts[eye_index] = 24;
-    }
+    // eye_led_counts = {12, 12, 12, 12, 24, 24, 24, 12, 24, 24, 24, 24, 12, 24, 24, 12};
+    // // Initialize per-eye LED counts. Default to 12 for safety.
+    // for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
+    //     eye_led_counts[eye_index] = 12;
+    // }
+    // // The system has 16 eyes: first 8 have 12 LEDs, second 8 have 24 LEDs.
+    // for (int eye_index = 8; eye_index < NUM_EYES; eye_index++) {
+    //     eye_led_counts[eye_index] = 24;
+    // }
 
     // Compute total LEDs
     total_eye_leds = 0;
@@ -125,6 +126,7 @@ void loopEyes() {
         max_intensity *= eye_brightness_multipliers[eye_index];
         intensity = MIN_INTENSITY + (max_intensity - MIN_INTENSITY) * intensity;
     
+        // CRGB base_color = eye_index % 2 == 0 ? CRGB::Blue : CRGB::Red;
         CRGB base_color = eye_states[eye_index] ? CRGB::White : CRGB::Red;
         CRGB color = base_color;
         color.r = uint8_t(color.r * intensity);

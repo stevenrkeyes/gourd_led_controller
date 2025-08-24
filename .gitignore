@@ -4,7 +4,7 @@ led_controller/.vscode/
 
 # Python virtual environments
 .venv/
-led_controller/raspberry_pi/uv.lock
+uv.lock
 
 
 # Python cache files

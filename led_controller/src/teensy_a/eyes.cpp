@@ -42,16 +42,6 @@ static int computeEyeOffset(int eye_index) {
 }
 
 void setupEyes() {
-    // eye_led_counts = {12, 12, 12, 12, 24, 24, 24, 12, 24, 24, 24, 24, 12, 24, 24, 12};
-    // // Initialize per-eye LED counts. Default to 12 for safety.
-    // for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) {
-    //     eye_led_counts[eye_index] = 12;
-    // }
-    // // The system has 16 eyes: first 8 have 12 LEDs, second 8 have 24 LEDs.
-    // for (int eye_index = 8; eye_index < NUM_EYES; eye_index++) {
-    //     eye_led_counts[eye_index] = 24;
-    // }
-
     // Compute total LEDs
     total_eye_leds = 0;
     for (int eye_index = 0; eye_index < NUM_EYES; eye_index++) total_eye_leds += eye_led_counts[eye_index];

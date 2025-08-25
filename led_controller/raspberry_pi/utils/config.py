@@ -8,14 +8,15 @@ Contains hardware configuration, serial numbers, and communication constants
 # ======================
 
 # Teensy Serial Numbers
-TEENSY_A_SERIAL = "14094100"  # Button controller
+TEENSY_A_SERIAL = "17985960"  # Button controller
 TEENSY_B_SERIAL = "17937010"   # LED controller
 TEENSY_C_SERIAL = "17936630"   # LED controller 
 
 # Old teensy serial numbers kept for reference
+# TEENSY_A_SERIAL_OLD = "14094100"  # Button controller (old)
 # TEENSY_B_SERIAL_SEMI)_OLD = "4278530"  # 3.2 LED controller (old)
-# TEENSY_C_SERIAL_OLD = "17985960" # 4.1 LED controller (old)
 # TEENSY_B_SERIAL_OLD = "17656680"  # LED controller (old)
+# TEENSY_C_SERIAL_OLD = "17985960" # 4.1 LED controller (old)
 
 # Teensy Mapping for convenient access
 TEENSY_MAPPING = {

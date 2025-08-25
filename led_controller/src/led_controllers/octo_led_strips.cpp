@@ -15,21 +15,11 @@ const int config = WS2811_RGBW | WS2811_800kHz;
 OctoWS2811 leds(LED_STRIP_NUM_LEDS, displayMemoryLeds, drawingMemoryLeds, config);
 
 #define MAX_ACTIVE_PULSES 8
-#define FIRE_UPDATE_INTERVAL 100 // ms between fire updates
 
 static LedPulse activePulses[MAX_ACTIVE_PULSES];
-static uint8_t fireHeat[8][LED_STRIP_NUM_LEDS]; // Simplified: just heat values
 static const unsigned long pulseDuration = 400; // ms for pulse to travel full strip
 static const uint32_t pulseColor = 0x00FFFFFF; // White
 static const uint32_t backgroundColor = 0x00000000; // Black background
-
-// Simplified fire colors - just 4 main colors instead of 256
-const uint32_t fireColors[4] = {
-    0x00000000, // Black
-    0x00400000, // Dark red
-    0x00800000, // Red  
-    0x00400000  // Orange
-};
 
 void setupLedStrips() {
     leds.begin();
@@ -40,14 +30,7 @@ void setupLedStrips() {
         activePulses[i].active = false;
     }
 
-    // Initialize fire heat for each strip
-    for (int strip = 0; strip < 8; strip++) {
-        for (int i = 0; i < LED_STRIP_NUM_LEDS; i++) {
-            fireHeat[strip][i] = random(0, 3); // Simple 0-3 heat levels
-        }
-    }
-
-    Serial.println("OctoWS2811 LED strips initialized with simplified fire effect");
+    Serial.println("OctoWS2811 LED strips");
 }
 
 void triggerLedPulse(unsigned long timestamp, int strip) {
@@ -73,43 +56,34 @@ void clearAllLEDs() {
     }
 }
 
-void drawFire() {
-    for (int strip = 0; strip < 8; strip++) {
-        for (int i = 0; i < LED_STRIP_NUM_LEDS; i++) {
-            // Simplified: just use the heat value directly
-            uint8_t heat = fireHeat[strip][i];
-            
-            // Get color from fire palette
-            uint32_t color = fireColors[heat];
-            
-            // Set the pixel
-            int pixelIndex = strip * LED_STRIP_NUM_LEDS + i;
-            leds.setPixel(pixelIndex, color);
-        }
-    }
-}
+// TODO: decide if we want this.
+const unsigned long BREATHING_PERIOD = 5000;
+const float BREATHING_SPEEDUP = 2.5;
+const float MIN_INTENSITY = 0.05;
+const float MAX_INTENSITY = 0.5;
+const float INTENSITY_DECREASE = 2.0;
+unsigned long breathing_start = 0;
 
-void updateFire() {
-    unsigned long now = millis();
+void drawSineBreathing() {
+    unsigned long current_time = millis();
+
+    for (int strip_index = 0; strip_index < NUM_LED_STRIPS; strip_index++) {
+        float breathing_progress = float(current_time - breathing_start) / BREATHING_PERIOD;
+        float sine_value = sin(breathing_progress * 2 * PI); // -1 to +1
+        float intensity = (sine_value + 1.0) / 2.0; // 0.0 to 1.0
+        intensity = MIN_INTENSITY + (MAX_INTENSITY - MIN_INTENSITY) * intensity;
     
-    for (int strip = 0; strip < 8; strip++) {
-        if (now - fireHeat[strip][0] < FIRE_UPDATE_INTERVAL) {
-            continue; // Skip this strip if not time to update
-        }
+        // Apply intensity to RGB values directly
+        uint8_t r = 0xFF * intensity;
+        uint8_t g = 0x22 * intensity;
+        uint8_t b = 0xAA * intensity;
+
+        // Correct color packing using OR (|) not XOR (^)
+        uint32_t color = (g << 16) | (r << 8) | b;
         
-        // Simple fire physics: heat rises and cools
-        for (int i = LED_STRIP_NUM_LEDS - 1; i > 0; i--) {
-            fireHeat[strip][i] = fireHeat[strip][i-1];
-        }
-        
-        // Bottom pixel gets new heat
-        fireHeat[strip][0] = random(2, 4);
-        
-        // Add some randomness for flickering
-        for (int i = 0; i < LED_STRIP_NUM_LEDS; i++) {
-            if (random(100) < 30) { // 30% chance to flicker
-                fireHeat[strip][i] = constrain(fireHeat[strip][i] + random(-1, 2), 0, 3);
-            }
+        for (int led_index = 0; led_index < LED_STRIP_NUM_LEDS; led_index++) {
+            int offset = strip_index * LED_STRIP_NUM_LEDS;
+            leds.setPixel(offset + led_index, color);
         }
     }
 }
@@ -143,9 +117,8 @@ void loopLedStrips() {
 
     // Update LED animations
     clearAllLEDs();
-    drawFire(); // Draw the fire effect
     drawAllPulses(); // Draw active pulses on top
-    updateFire(); // Update fire physics
+    drawSineBreathing();
     
     leds.show();
 }

@@ -20,6 +20,8 @@ void setupTeensyA() {
 
 void loopTeensyA() {
     // Handle incoming commands from Pi
+    // TODO: Does this ever happen? Or is Teensy A outgoing only?
+    // Either way, probably no harm in having this here.
     CommandPacket packet;
     if (receiveCommand(packet)) {
         switch (packet.command) {

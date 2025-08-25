@@ -1,8 +1,11 @@
 .pio
 led_controller/.vscode/
+.vscode/
 
 # Python virtual environments
 .venv/
+uv.lock
+
 
 # Python cache files
 __pycache__/
@@ -11,6 +14,7 @@ __pycache__/
 *.pyd
 .Python
 *.egg-info
+*.DS_Store
 
 
 # Raspberry Pi specific

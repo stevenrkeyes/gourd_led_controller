@@ -25,8 +25,6 @@ from utils import (
     create_button_led_packet
 )
 
-# Removed duplicated CommandPacket class - now using centralized protocol
-
 class TeensyAMonitor:
     def __init__(self, port='/dev/ttyACM0', baudrate=9600):
         self.port = port

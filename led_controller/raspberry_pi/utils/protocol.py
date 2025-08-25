@@ -13,7 +13,8 @@ from .config import (
     CMD_BUTTON_PRESS,
     CMD_BUTTON_LED,
     CMD_SENSOR_DATA,
-    CMD_HEARTBEAT
+    CMD_HEARTBEAT,
+    NUM_STRIPS_PER_TEENSY,
 )
 
 
@@ -76,17 +77,22 @@ class CommandPacket:
         """String representation for debugging"""
         return f"CommandPacket(cmd=0x{self.command:02x}, len={self.data_length}, data={self.data[:self.data_length]})"
 
+# Safety function to make sure we are always sending strip indices with values [0-7].
+# Committing to this standard this on the raspberry pi allows us to avoid doing post-unpack checks on the Teensy side.
+def get_validated_strip_id(strip_id):
+    return strip_id % NUM_STRIPS_PER_TEENSY
 
 # Convenience functions for creating common packets
 def create_led_pulse_packet(strip_id):
     """Create a packet to pulse a specific LED strip"""
-    return CommandPacket(CMD_LED_PULSE, 1, [strip_id])
+    return CommandPacket(CMD_LED_PULSE, 1, [get_validated_strip_id(strip_id)])
 
 def create_led_effect_packet(strip_id, effect_type, *params):
     """Create a packet for LED effects"""
-    data = [strip_id, effect_type] + list(params)
+    data = [get_validated_strip_id(strip_id), effect_type] + list(params)
     return CommandPacket(CMD_LED_EFFECT, len(data), data)
 
+# TODO: Is this needed?
 def create_button_led_packet(button_id, r, g, b):
     """Create a packet to set button LED color"""
     return CommandPacket(CMD_BUTTON_LED, 4, [button_id, r, g, b])

@@ -30,7 +30,11 @@ void setupLedStrips() {
         activePulses[i].active = false;
     }
 
+    // Initialize breathing effect
+    breathing_start = millis();
+
     Serial.println("OctoWS2811 LED strips");
+    Serial.println("Red breathing effect active by default");
 }
 
 void triggerLedPulse(unsigned long timestamp, int strip) {
@@ -56,13 +60,48 @@ void clearAllLEDs() {
     }
 }
 
-// TODO: decide if we want this.
+// Breathing effect variables - similar to the eye LEDs
 const unsigned long BREATHING_PERIOD = 5000;
-const float BREATHING_SPEEDUP = 2.5;
 const float MIN_INTENSITY = 0.05;
 const float MAX_INTENSITY = 0.5;
-const float INTENSITY_DECREASE = 2.0;
 unsigned long breathing_start = 0;
+
+// Effect state management
+enum EffectMode {
+    EFFECT_OFF,
+    EFFECT_RED_BREATHING,
+    EFFECT_SINE_BREATHING,
+    EFFECT_PULSES_ONLY
+};
+
+static EffectMode currentEffect = EFFECT_RED_BREATHING;
+
+// Red breathing effect - similar to the eye LEDs
+void drawRedBreathing() {
+    unsigned long current_time = millis();
+
+    for (int strip_index = 0; strip_index < NUM_LED_STRIPS; strip_index++) {
+        float breathing_progress = float(current_time - breathing_start) / BREATHING_PERIOD;
+        float sine_value = sin(breathing_progress * 2 * PI); // -1 to +1
+        float intensity = (sine_value + 1.0) / 2.0; // 0.0 to 1.0
+        intensity = MIN_INTENSITY + (MAX_INTENSITY - MIN_INTENSITY) * intensity;
+    
+        // Red breathing effect - pure red like the eye LEDs
+        uint8_t r = 0xFF * intensity;
+        uint8_t g = 0x00; // No green for pure red
+        uint8_t b = 0x00; // No blue for pure red
+
+        // Color packing for OctoWS2811 (WGRB format)
+        uint32_t color = (g << 16) | (r << 8) | b;
+        
+        for (int led_index = 0; led_index < LED_STRIP_NUM_LEDS; led_index++) {
+            int offset = strip_index * LED_STRIP_NUM_LEDS;
+            leds.setPixel(offset + led_index, color);
+        }
+    }
+}
+
+
 
 void drawSineBreathing() {
     unsigned long current_time = millis();
@@ -109,16 +148,65 @@ void loopLedStrips() {
     // Handle incoming commands from Pi
     CommandPacket packet;
     if (receiveCommand(packet)) {
-        if (packet.command == CMD_LED_PULSE) {
-            int strip = (packet.data_length > 0) ? packet.data[0] : 0;
-            triggerLedPulse(millis(), strip);
+        switch (packet.command) {
+            case CMD_LED_PULSE:
+                {
+                    int strip = (packet.data_length > 0) ? packet.data[0] : 0;
+                    triggerLedPulse(millis(), strip);
+                }
+                break;
+                
+            case CMD_LED_EFFECT:
+                if (packet.data_length > 0) {
+                    uint8_t effect_id = packet.data[0];
+                    switch (effect_id) {
+                        case 0:
+                            currentEffect = EFFECT_OFF;
+                            Serial.println("Effects off");
+                            break;
+                        case 1:
+                            currentEffect = EFFECT_RED_BREATHING;
+                            breathing_start = millis();
+                            Serial.println("Red breathing effect");
+                            break;
+                        case 2:
+                            currentEffect = EFFECT_SINE_BREATHING;
+                            breathing_start = millis();
+                            Serial.println("Sine breathing effect");
+                            break;
+                        case 3:
+                            currentEffect = EFFECT_PULSES_ONLY;
+                            Serial.println("Pulses only mode");
+                            break;
+                        default:
+                            Serial.print("Unknown effect ID: ");
+                            Serial.println(effect_id);
+                            break;
+                    }
+                }
+                break;
         }
     }
 
     // Update LED animations
     clearAllLEDs();
+    
+    // Draw background effect based on current mode
+    switch (currentEffect) {
+        case EFFECT_RED_BREATHING:
+            drawRedBreathing();
+            break;
+        case EFFECT_SINE_BREATHING:
+            drawSineBreathing();
+            break;
+        case EFFECT_PULSES_ONLY:
+        case EFFECT_OFF:
+        default:
+            // No background effect, just pulses
+            break;
+    }
+    
     drawAllPulses(); // Draw active pulses on top
-    drawSineBreathing();
     
     leds.show();
 }

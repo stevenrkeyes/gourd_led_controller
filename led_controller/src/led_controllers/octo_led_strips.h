@@ -18,8 +18,8 @@ extern OctoWS2811 leds;
 void setupLedStrips();
 void triggerLedPulse(unsigned long timestamp, int strip);
 void clearAllLEDs();
-void drawFire();
-void updateFire();
+void drawRedBreathing();
+void drawSineBreathing();
 void drawAllPulses();
 void loopLedStrips();
 

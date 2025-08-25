@@ -87,10 +87,13 @@ def create_led_pulse_packet(strip_id):
     """Create a packet to pulse a specific LED strip"""
     return CommandPacket(CMD_LED_PULSE, 1, [get_validated_strip_id(strip_id)])
 
-def create_led_effect_packet(strip_id, effect_type, *params):
-    """Create a packet for LED effects"""
-    data = [get_validated_strip_id(strip_id), effect_type] + list(params)
-    return CommandPacket(CMD_LED_EFFECT, len(data), data)
+def create_led_effect_packet(effect_id):
+    """Create a packet for LED effects
+    
+    Args:
+        effect_id: 0=off, 1=red breathing, 2=sine breathing, 3=pulses only
+    """
+    return CommandPacket(CMD_LED_EFFECT, 1, [effect_id])
 
 # TODO: Is this needed?
 def create_button_led_packet(button_id, r, g, b):
